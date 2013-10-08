@@ -4,7 +4,7 @@
 
 pub use error::*;
 pub use init::*;
-pub use window::*;
+pub use rect::*;
 
 mod linkage {
     #[link_args="-lSDL2"]

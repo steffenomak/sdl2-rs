@@ -1,5 +1,12 @@
 use std::str;
-mod ffi;
+
+pub mod ffi {
+    use std::libc::c_char;
+
+    externfn!(fn SDL_ClearError())
+    externfn!(fn SDL_GetError() -> *c_char)
+    externfn!(fn SDL_SetError(err: *c_char))
+}
 
 pub fn clear_error() {
     unsafe {
