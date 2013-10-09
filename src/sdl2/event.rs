@@ -1,5 +1,5 @@
 pub mod ffi {
-    use std::libc::{uint32_t, uint8_t, int32_t}
+    use std::libc::{uint32_t, uint8_t, int32_t};
     enum SDL_EventType {
         SDL_FIRSTEVENT = 0,
         SDL_QUIT = 0x100,
@@ -79,12 +79,6 @@ pub mod ffi {
         padding3: uint8_t,
         data1: int32_t,
         data2: int32_t,
-    }
-
-    struct SDL_KeyboardEvent {
-        _type: uint32_t,
-        time_stamp: uint32_t,
-        window_id: uint32_t,
     }
 }
 

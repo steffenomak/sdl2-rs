@@ -5,6 +5,9 @@
 pub use error::*;
 pub use init::*;
 pub use rect::*;
+pub use event::*;
+pub use keycode::*;
+pub use scancode::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -14,3 +17,6 @@ mod linkage {
 pub mod error;
 pub mod init;
 pub mod rect;
+pub mod event;
+pub mod keycode;
+pub mod scancode;
