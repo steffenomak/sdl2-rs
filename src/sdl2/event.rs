@@ -80,5 +80,21 @@ pub mod ffi {
         data1: int32_t,
         data2: int32_t,
     }
+
+    struct SDL_KeyboadEvent {
+        _type: uint32_t,
+        time_stamp: uint32_t,
+        window_id: uint32_t,
+        state: uint8_t,
+        repeat: uint8_t,
+        padding2: uint8_t,
+        padding3: uint8_t,
+        keysym: SDL_Keysym,
+    }
+
+    struct SDL_QuitEvent {
+        _type: uint32_t,
+        time_stamp: uint32_t,
+    }
 }
 
