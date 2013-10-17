@@ -80,5 +80,9 @@ pub mod ffi {
         data1: int32_t,
         data2: int32_t,
     }
+
+    struct SDL_Event {
+        event: [uint8_t, 56],
+    }
 }
 
