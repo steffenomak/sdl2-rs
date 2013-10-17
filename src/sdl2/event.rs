@@ -98,7 +98,7 @@ pub mod ffi {
     }
 
     struct SDL_Event {
-        event: [uint8_t, 56],
+        event: [uint8_t, ..56],
     }
 }
 
