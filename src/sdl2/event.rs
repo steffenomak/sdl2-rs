@@ -1,5 +1,9 @@
+mod keyboard;
+
 pub mod ffi {
     use std::libc::{uint32_t, uint8_t, int32_t};
+    use super::keyboard::ffi::SDL_Keysym;
+
     enum SDL_EventType {
         SDL_FIRSTEVENT = 0,
         SDL_QUIT = 0x100,
