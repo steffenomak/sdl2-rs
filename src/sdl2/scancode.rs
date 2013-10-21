@@ -100,7 +100,7 @@ pub enum ScanCode {
     NonUsBackslashScanCode     = 100_u,
     ApplicationScanCode        = 101_u,
     PowerScanCode              = 102_u,
-                               KpEqualsScanCode           = 103_u,
+    KpEqualsScanCode           = 103_u,
     F13ScanCode                = 104_u,
     F14ScanCode                = 105_u,
     F15ScanCode                = 106_u,
@@ -200,7 +200,7 @@ pub enum ScanCode {
     KpMemDivideScanCode        = 214_u,
     KpPlusMinusScanCode        = 215_u,
     KpClearScanCode            = 216_u,
-                               KpClearEntryScanCode       = 217_u,
+    KpClearEntryScanCode       = 217_u,
     KpBinaryScanCode           = 218_u,
     KpOoctalScanCode           = 219_u,
     KpDecimalScanCode          = 220_u,
@@ -243,3 +243,4 @@ pub enum ScanCode {
     App2ScanCode               = 284_u,
     NumScanCode                = 512_u,
 }
+

@@ -1,3 +1,5 @@
 build
 .rust
-
+bin
+lib
+*.swp

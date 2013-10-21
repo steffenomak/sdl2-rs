@@ -8,6 +8,7 @@ pub use rect::*;
 pub use event::*;
 pub use keycode::*;
 pub use scancode::*;
+pub use video::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -20,3 +21,4 @@ pub mod rect;
 pub mod event;
 pub mod keycode;
 pub mod scancode;
+pub mod video;
