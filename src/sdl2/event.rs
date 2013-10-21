@@ -1,13 +1,13 @@
 use std::num;
-
-mod keyboard;
-mod video;
+use video;
+use keyboard;
 
 pub mod ffi {
     use std::ptr;
     use std::cast;
     use std::libc::{uint32_t, int32_t, uint8_t, c_int};
-    use super::keyboard::ffi::SDL_Keysym;
+    use keyboard::ffi::SDL_Keysym;
+    //use super::keyboard::ffi::SDL_Keysym;
 
     pub enum SDL_EventType {
         SDL_FIRSTEVENT               = 0,
@@ -183,8 +183,8 @@ pub enum Event {
     NoEvent,
     CommonEvent(u32),
     WindowEvent(u32, ~video::Window, video::WindowEventID, i32, i32),
-    KeyboardDownEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
-    KeyboardUpEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
+    /*KeyboardDownEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
+    KeyboardUpEvent(u32, ~video::Window, bool, ~keyboard::Keysym),*/
     QuitEvent(u32),
     UnhandeledEvent(u32),
 }
@@ -218,7 +218,7 @@ impl Event {
 
                     QuitEvent(event.time_stamp)
                 }
-                WindowEventType => {
+/*                WindowEventType => {
                     let event = raw.window();
 
                     let event = 
@@ -262,7 +262,7 @@ impl Event {
                                       keyboard::Keysym::wrap(&event.keysym))
 
                 }
-
+*/
                 _ => {
                     UnhandeledEvent(raw_type)
                 }

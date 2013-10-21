@@ -2,7 +2,7 @@
 #[crate_type = "lib"];
 #[feature(globs)];
 
-pub use error::*;
+/*pub use error::*;
 pub use init::*;
 pub use rect::*;
 pub use event::*;
@@ -10,7 +10,7 @@ pub use keycode::*;
 pub use scancode::*;
 pub use video::*;
 pub use keyboard::*;
-
+*/
 
 mod linkage {
     #[link_args="-lSDL2"]
