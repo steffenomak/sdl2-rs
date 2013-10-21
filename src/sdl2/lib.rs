@@ -9,6 +9,8 @@ pub use event::*;
 pub use keycode::*;
 pub use scancode::*;
 pub use video::*;
+pub use keyboard::*;
+
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -22,3 +24,4 @@ pub mod event;
 pub mod keycode;
 pub mod scancode;
 pub mod video;
+pub mod keyboard;

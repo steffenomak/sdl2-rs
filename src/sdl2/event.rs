@@ -1,11 +1,12 @@
 use std::num;
 
 mod keyboard;
+mod video;
 
 pub mod ffi {
     use std::ptr;
     use std::cast;
-    use std::libc::{uint32_t, uint8_t, c_int};
+    use std::libc::{uint32_t, int32_t, uint8_t, c_int};
     use super::keyboard::ffi::SDL_Keysym;
 
     pub enum SDL_EventType {
@@ -72,16 +73,16 @@ pub mod ffi {
         SDL_LASTEVENT                = 0xFFFF,
     }
 
-    /*struct SDL_CommonEvent {
+    pub struct SDL_CommonEvent {
         _type: uint32_t,
         time_stamp: uint32_t,
     }
 
-    struct SDL_WindowEvent {
+    pub struct SDL_WindowEvent {
         _type: uint32_t,
         time_stamp: uint32_t,
         window_id: uint32_t,
-        event: uint32_t,
+        event: uint8_t,
         padding1: uint8_t,
         padding2: uint8_t,
         padding3: uint8_t,
@@ -89,7 +90,7 @@ pub mod ffi {
         data2: int32_t,
     }
 
-    struct SDL_KeyboadEvent {
+    pub struct SDL_KeyboardEvent {
         _type: uint32_t,
         time_stamp: uint32_t,
         window_id: uint32_t,
@@ -98,7 +99,7 @@ pub mod ffi {
         padding2: uint8_t,
         padding3: uint8_t,
         keysym: SDL_Keysym,
-    }*/
+    }
 
     pub struct SDL_QuitEvent {
         _type: uint32_t,
@@ -118,6 +119,18 @@ pub mod ffi {
             unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
         }
 
+        pub fn common(&self) -> *SDL_CommonEvent {
+            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+        }
+
+        pub fn window(&self) -> *SDL_WindowEvent {
+            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+        }
+
+        pub fn keyboard(&self) -> *SDL_KeyboardEvent {
+            unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
+        }
+
         pub fn quit(&self) -> *SDL_QuitEvent {
             unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
         }
@@ -129,47 +142,51 @@ pub mod ffi {
 
 #[deriving(FromPrimitive)]
 pub enum EventType {
-    FirstEvent = ffi::SDL_FIRSTEVENT as u32,
-    Quit = ffi::SDL_QUIT as u32,
-    WindowEvent = ffi::SDL_WINDOWEVENT as u32,
-    SysWmEvent = ffi::SDL_SYSWMEVENT as u32,
-    Keydown = ffi::SDL_KEYDOWN as u32,
-    KeyUp = ffi::SDL_KEYUP as u32,
-    TextEditing = ffi::SDL_TEXTEDITING as u32,
-    TextInput = ffi::SDL_TEXTINPUT as u32,
-    MouseMotion = ffi::SDL_MOUSEMOTION as u32,
-    MouseButtondown = ffi::SDL_MOUSEBUTTONDOWN as u32,
-    MouseButtonup = ffi::SDL_MOUSEBUTTONUP as u32,
-    MouseWheel = ffi::SDL_MOUSEWHEEL as u32,
-    JoyAxisMotion = ffi::SDL_JOYAXISMOTION as u32,
-    JoyBallMotion = ffi::SDL_JOYBALLMOTION as u32,
-    JoyHatMotion = ffi::SDL_JOYHATMOTION as u32,
-    JoyButtonDown = ffi::SDL_JOYBUTTONDOWN as u32,
-    JoyButtonUp = ffi::SDL_JOYBUTTONUP as u32,
-    JoyDeviceAdded = ffi::SDL_JOYDEVICEADDED as u32,
-    JoyDeviceRemoved = ffi::SDL_JOYDEVICEREMOVED as u32,
-    ControllerAxisMotion = ffi::SDL_CONTROLLERAXISMOTION as u32,
-    ControllerButtonDown = ffi::SDL_CONTROLLERBUTTONDOWN as u32,
-    ControllerButtonUp = ffi::SDL_CONTROLLERBUTTONUP as u32,
-    ControllerDeviceAdded = ffi::SDL_CONTROLLERDEVICEADDED as u32,
-    ControllerDevicereMoved = ffi::SDL_CONTROLLERDEVICEREMOVED as u32,
-    ControllerDevicereMapped = ffi::SDL_CONTROLLERDEVICEREMAPPED as u32,
-    FingerDown = ffi::SDL_FINGERDOWN as u32,
-    FingerUp = ffi::SDL_FINGERUP as u32,
-    FingerMotion = ffi::SDL_FINGERMOTION as u32,
-    DollarGesture = ffi::SDL_DOLLARGESTURE as u32,
-    DollarRecord = ffi::SDL_DOLLARRECORD as u32,
-    MultiGesture = ffi::SDL_MULTIGESTURE as u32,
-    ClipboardUpdate = ffi::SDL_CLIPBOARDUPDATE as u32,
-    DropFile = ffi::SDL_DROPFILE as u32,
-    UserEvent = ffi::SDL_USEREVENT as u32,
-    LastEvent = ffi::SDL_LASTEVENT as u32, 
+    FirstEventType = ffi::SDL_FIRSTEVENT as u32,
+    QuitEventType = ffi::SDL_QUIT as u32,
+    WindowEventType = ffi::SDL_WINDOWEVENT as u32,
+    SysWmEventType = ffi::SDL_SYSWMEVENT as u32,
+    KeydownEventType = ffi::SDL_KEYDOWN as u32,
+    KeyUpEventType = ffi::SDL_KEYUP as u32,
+    TextEditingEventType = ffi::SDL_TEXTEDITING as u32,
+    TextInputEventType = ffi::SDL_TEXTINPUT as u32,
+    MouseMotionEventType = ffi::SDL_MOUSEMOTION as u32,
+    MouseButtondownEventType = ffi::SDL_MOUSEBUTTONDOWN as u32,
+    MouseButtonupEventType = ffi::SDL_MOUSEBUTTONUP as u32,
+    MouseWheelEventType = ffi::SDL_MOUSEWHEEL as u32,
+    JoyAxisMotionEventType = ffi::SDL_JOYAXISMOTION as u32,
+    JoyBallMotionEventType = ffi::SDL_JOYBALLMOTION as u32,
+    JoyHatMotionEventType = ffi::SDL_JOYHATMOTION as u32,
+    JoyButtonDownEventType = ffi::SDL_JOYBUTTONDOWN as u32,
+    JoyButtonUpEventType = ffi::SDL_JOYBUTTONUP as u32,
+    JoyDeviceAddedEventType = ffi::SDL_JOYDEVICEADDED as u32,
+    JoyDeviceRemovedEventType = ffi::SDL_JOYDEVICEREMOVED as u32,
+    ControllerAxisMotionEventType = ffi::SDL_CONTROLLERAXISMOTION as u32,
+    ControllerButtonDownEventType = ffi::SDL_CONTROLLERBUTTONDOWN as u32,
+    ControllerButtonUpEventType = ffi::SDL_CONTROLLERBUTTONUP as u32,
+    ControllerDeviceAddedEventType = ffi::SDL_CONTROLLERDEVICEADDED as u32,
+    ControllerDevicereMovedEventType = ffi::SDL_CONTROLLERDEVICEREMOVED as u32,
+    ControllerDevicereMappedEventType = ffi::SDL_CONTROLLERDEVICEREMAPPED as u32,
+    FingerDownEventType = ffi::SDL_FINGERDOWN as u32,
+    FingerUpEventType = ffi::SDL_FINGERUP as u32,
+    FingerMotionEventType = ffi::SDL_FINGERMOTION as u32,
+    DollarGestureEventType = ffi::SDL_DOLLARGESTURE as u32,
+    DollarRecordEventType = ffi::SDL_DOLLARRECORD as u32,
+    MultiGestureEventType = ffi::SDL_MULTIGESTURE as u32,
+    ClipboardUpdateEventType = ffi::SDL_CLIPBOARDUPDATE as u32,
+    DropFileEventType = ffi::SDL_DROPFILE as u32,
+    UserEventType = ffi::SDL_USEREVENT as u32,
+    LastEventType = ffi::SDL_LASTEVENT as u32, 
 }
 
 pub enum Event {
     NoEvent,
-    UnhandeledEvent(u32),
+    CommonEvent(u32),
+    WindowEvent(u32, ~video::Window, video::WindowEventID, i32, i32),
+    KeyboardDownEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
+    KeyboardUpEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
     QuitEvent(u32),
+    UnhandeledEvent(u32),
 }
 
 impl Event {
@@ -189,7 +206,7 @@ impl Event {
             };
             
             match event_type {
-                Quit => {
+                QuitEventType => {
                     let event = raw.quit();
 
                     let event =
@@ -201,6 +218,51 @@ impl Event {
 
                     QuitEvent(event.time_stamp)
                 }
+                WindowEventType => {
+                    let event = raw.window();
+
+                    let event = 
+                        if event.is_null() {
+                            return NoEvent; 
+                        } else {
+                            *event
+                        };
+                    WindowEvent(event.time_stamp, 
+                                video::Window::get_from_id(event.window_id).unwrap(),
+                                num::from_u8(event.event).unwrap(),
+                                event.data1,
+                                event.data2)
+                }
+
+                KeydownEventType => {
+                    let event = raw.keyboard();
+                    let event =
+                        if event.is_null() {
+                            return NoEvent;
+                        } else {
+                            *event
+                        };
+                    KeyboardDownEvent(event.time_stamp, 
+                                      video::Window::get_from_id(event.window_id).unwrap(),
+                                      event.repeat != 0,
+                                      keyboard::Keysym::wrap(&event.keysym))
+                }
+
+                KeyUpEventType => {
+                    let event = raw.keyboard();
+                    let event =
+                        if event.is_null() {
+                            return NoEvent;
+                        } else {
+                            *event
+                        };
+                    KeyboardUpEvent(event.time_stamp, 
+                                      video::Window::get_from_id(event.window_id).unwrap(),
+                                      event.repeat != 0,
+                                      keyboard::Keysym::wrap(&event.keysym))
+
+                }
+
                 _ => {
                     UnhandeledEvent(raw_type)
                 }

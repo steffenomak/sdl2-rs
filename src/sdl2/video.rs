@@ -1,8 +1,6 @@
 use error::*;
 use std::ptr;
 
-mod error;
-
 pub mod ffi {
     use std::libc::{c_int, uint32_t, c_char};
     pub struct SDL_Window;
@@ -21,6 +19,24 @@ pub mod ffi {
         SDL_WINDOW_MOUSE_FOCUS = 0x00000400,
         SDL_WINDOW_FULLSCREEN_DESKTOP = 0x00001001,
         SDL_WINDOW_FOREIGN = 0x00000800
+    }
+
+    pub enum SDL_WindowEventID {
+        SDL_WINDOWEVENT_NONE = 0_u8,
+        SDL_WINDOWEVENT_SHOWN = 1_u8,
+        SDL_WINDOWEVENT_HIDDEN = 2_u8,
+        SDL_WINDOWEVENT_EXPOSED = 3_u8,
+        SDL_WINDOWEVENT_MOVED = 4_u8,
+        SDL_WINDOWEVENT_RESIZED = 5_u8,
+        SDL_WINDOWEVENT_SIZE_CHANGED = 6_u8,
+        SDL_WINDOWEVENT_MINIMIZED = 7_u8,
+        SDL_WINDOWEVENT_MAXIMIZED = 8_u8,
+        SDL_WINDOWEVENT_RESTORED = 9_u8,
+        SDL_WINDOWEVENT_ENTER = 10_u8,
+        SDL_WINDOWEVENT_LEAVE = 11_u8,
+        SDL_WINDOWEVENT_FOCUS_GAINED = 12_u8,
+        SDL_WINDOWEVENT_FOCUS_LOST = 13_u8,
+        SDL_WINDOWEVENT_CLOSE = 14_u8,
     }
 
     externfn!(fn SDL_CreateWindow(title: *c_char, 
@@ -46,6 +62,25 @@ pub enum WindowFlags {
     MouseFocus = ffi::SDL_WINDOW_MOUSE_FOCUS as u32,
     FullScreenDesktop = ffi::SDL_WINDOW_FULLSCREEN_DESKTOP as u32,
     Foreign = ffi::SDL_WINDOW_FOREIGN as u32,
+}
+
+#[deriving(FromPrimitive)]
+pub enum WindowEventID {
+    NoneEvent = ffi::SDL_WINDOWEVENT_NONE as u8,
+    ShownEvent = ffi::SDL_WINDOWEVENT_SHOWN as u8,
+    HiddenEvent = ffi::SDL_WINDOWEVENT_HIDDEN as u8,
+    ExposedEvent = ffi::SDL_WINDOWEVENT_EXPOSED as u8,
+    MovedEvent = ffi::SDL_WINDOWEVENT_MOVED as u8,
+    ResizedEvent = ffi::SDL_WINDOWEVENT_RESIZED as u8,
+    SizeChangedEvent = ffi::SDL_WINDOWEVENT_SIZE_CHANGED as u8,
+    MinimizedEvent = ffi::SDL_WINDOWEVENT_MINIMIZED as u8,
+    MaximizedEvent = ffi::SDL_WINDOWEVENT_MAXIMIZED as u8,
+    RestoredEvent = ffi::SDL_WINDOWEVENT_RESTORED as u8,
+    EnterEvent = ffi::SDL_WINDOWEVENT_ENTER as u8,
+    LeaveEvent = ffi::SDL_WINDOWEVENT_LEAVE as u8,
+    FocusGainedEvent = ffi::SDL_WINDOWEVENT_FOCUS_GAINED as u8,
+    FocusLostEvent = ffi::SDL_WINDOWEVENT_FOCUS_LOST as u8,
+    CloseEvent = ffi::SDL_WINDOWEVENT_CLOSE as u8,
 }
 
 pub struct Window {
