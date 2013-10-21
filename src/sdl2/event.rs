@@ -1,77 +1,12 @@
 use std::num;
-use video;
-use keyboard;
+use video::{Window, WindowEventID};
+use keyboard::Keysym;
 
 pub mod ffi {
     use std::ptr;
     use std::cast;
     use std::libc::{uint32_t, int32_t, uint8_t, c_int};
     use keyboard::ffi::SDL_Keysym;
-    //use super::keyboard::ffi::SDL_Keysym;
-
-    pub enum SDL_EventType {
-        SDL_FIRSTEVENT               = 0,
-        SDL_QUIT                     = 0x100,
-
-        /* Window events */
-        SDL_WINDOWEVENT              = 0x200, /**< Window state change */
-        SDL_SYSWMEVENT               = 0x201, /**< System specific event */
-
-        /* Keyboard events */
-        SDL_KEYDOWN                  = 0x300, /**< Key pressed */
-        SDL_KEYUP                    = 0x301, /**< Key released */
-        SDL_TEXTEDITING              = 0x302, /**< Keyboard text editing (composition) */
-        SDL_TEXTINPUT                = 0x303, /**< Keyboard text input */
-
-        /* Mouse events */
-        SDL_MOUSEMOTION              = 0x400, /**< Mouse moved */
-        SDL_MOUSEBUTTONDOWN          = 0x401, /**< Mouse button pressed */
-        SDL_MOUSEBUTTONUP            = 0x402, /**< Mouse button released */
-        SDL_MOUSEWHEEL               = 0x403, /**< Mouse wheel motion */
-
-        /* Joystick events */
-        SDL_JOYAXISMOTION            = 0x600, /**< Joystick axis motion */
-        SDL_JOYBALLMOTION            = 0x601, /**< Joystick trackball motion */
-        SDL_JOYHATMOTION             = 0x602, /**< Joystick hat position change */
-        SDL_JOYBUTTONDOWN            = 0x603, /**< Joystick button pressed */
-        SDL_JOYBUTTONUP              = 0x604, /**< Joystick button released */
-        SDL_JOYDEVICEADDED           = 0x605, /**< A new joystick has been inserted into the system */
-        SDL_JOYDEVICEREMOVED         = 0x606, /**< An opened joystick has been removed */
-
-        /* Game controller events */
-        SDL_CONTROLLERAXISMOTION     = 0x650, /**< Game controller axis motion */
-        SDL_CONTROLLERBUTTONDOWN     = 0x651, /**< Game controller button pressed */
-        SDL_CONTROLLERBUTTONUP       = 0x652, /**< Game controller button released */
-        SDL_CONTROLLERDEVICEADDED    = 0x653, /**< A new Game controller has been inserted into the system */
-        SDL_CONTROLLERDEVICEREMOVED  = 0x654, /**< An opened Game controller has been removed */
-        SDL_CONTROLLERDEVICEREMAPPED = 0x655, /**< The controller mapping was updated */
-
-        /* Touch events */
-        SDL_FINGERDOWN               = 0x700,
-        SDL_FINGERUP                 = 0x701,
-        SDL_FINGERMOTION             = 0x702,
-
-        /* Gesture events */
-        SDL_DOLLARGESTURE            = 0x800,
-        SDL_DOLLARRECORD             = 0x801,
-        SDL_MULTIGESTURE             = 0x802,
-
-        /* Clipboard events */
-        SDL_CLIPBOARDUPDATE          = 0x900, /**< The clipboard changed */
-
-        /* Drag and drop events */
-        SDL_DROPFILE                 = 0x1000, /**< The system requests a file open */
-
-        /** Events ::SDL_USEREVENT through ::SDL_LASTEVENT are for your use,
-         *  and should be allocated with SDL_RegisterEvents()
-         */
-        SDL_USEREVENT                = 0x8000,
-
-        /**
-         *  This last event is only for bounding internal arrays
-         */
-        SDL_LASTEVENT                = 0xFFFF,
-    }
 
     pub struct SDL_CommonEvent {
         _type: uint32_t,
@@ -142,49 +77,49 @@ pub mod ffi {
 
 #[deriving(FromPrimitive)]
 pub enum EventType {
-    FirstEventType = ffi::SDL_FIRSTEVENT as u32,
-    QuitEventType = ffi::SDL_QUIT as u32,
-    WindowEventType = ffi::SDL_WINDOWEVENT as u32,
-    SysWmEventType = ffi::SDL_SYSWMEVENT as u32,
-    KeydownEventType = ffi::SDL_KEYDOWN as u32,
-    KeyUpEventType = ffi::SDL_KEYUP as u32,
-    TextEditingEventType = ffi::SDL_TEXTEDITING as u32,
-    TextInputEventType = ffi::SDL_TEXTINPUT as u32,
-    MouseMotionEventType = ffi::SDL_MOUSEMOTION as u32,
-    MouseButtondownEventType = ffi::SDL_MOUSEBUTTONDOWN as u32,
-    MouseButtonupEventType = ffi::SDL_MOUSEBUTTONUP as u32,
-    MouseWheelEventType = ffi::SDL_MOUSEWHEEL as u32,
-    JoyAxisMotionEventType = ffi::SDL_JOYAXISMOTION as u32,
-    JoyBallMotionEventType = ffi::SDL_JOYBALLMOTION as u32,
-    JoyHatMotionEventType = ffi::SDL_JOYHATMOTION as u32,
-    JoyButtonDownEventType = ffi::SDL_JOYBUTTONDOWN as u32,
-    JoyButtonUpEventType = ffi::SDL_JOYBUTTONUP as u32,
-    JoyDeviceAddedEventType = ffi::SDL_JOYDEVICEADDED as u32,
-    JoyDeviceRemovedEventType = ffi::SDL_JOYDEVICEREMOVED as u32,
-    ControllerAxisMotionEventType = ffi::SDL_CONTROLLERAXISMOTION as u32,
-    ControllerButtonDownEventType = ffi::SDL_CONTROLLERBUTTONDOWN as u32,
-    ControllerButtonUpEventType = ffi::SDL_CONTROLLERBUTTONUP as u32,
-    ControllerDeviceAddedEventType = ffi::SDL_CONTROLLERDEVICEADDED as u32,
-    ControllerDevicereMovedEventType = ffi::SDL_CONTROLLERDEVICEREMOVED as u32,
-    ControllerDevicereMappedEventType = ffi::SDL_CONTROLLERDEVICEREMAPPED as u32,
-    FingerDownEventType = ffi::SDL_FINGERDOWN as u32,
-    FingerUpEventType = ffi::SDL_FINGERUP as u32,
-    FingerMotionEventType = ffi::SDL_FINGERMOTION as u32,
-    DollarGestureEventType = ffi::SDL_DOLLARGESTURE as u32,
-    DollarRecordEventType = ffi::SDL_DOLLARRECORD as u32,
-    MultiGestureEventType = ffi::SDL_MULTIGESTURE as u32,
-    ClipboardUpdateEventType = ffi::SDL_CLIPBOARDUPDATE as u32,
-    DropFileEventType = ffi::SDL_DROPFILE as u32,
-    UserEventType = ffi::SDL_USEREVENT as u32,
-    LastEventType = ffi::SDL_LASTEVENT as u32, 
+    FirstEventType                    = 0,
+    QuitEventType                     = 0x100,
+    WindowEventType                   = 0x200, 
+    SysWmEventType                    = 0x201, 
+    KeydownEventType                  = 0x300, 
+    KeyUpEventType                    = 0x301, 
+    TextEditingEventType              = 0x302, 
+    TextInputEventType                = 0x303, 
+    MouseMotionEventType              = 0x400, 
+    MouseButtondownEventType          = 0x401, 
+    MouseButtonupEventType            = 0x402, 
+    MouseWheelEventType               = 0x403, 
+    JoyAxisMotionEventType            = 0x600, 
+    JoyBallMotionEventType            = 0x601, 
+    JoyHatMotionEventType             = 0x602, 
+    JoyButtonDownEventType            = 0x603, 
+    JoyButtonUpEventType              = 0x604, 
+    JoyDeviceAddedEventType           = 0x605, 
+    JoyDeviceRemovedEventType         = 0x606, 
+    ControllerAxisMotionEventType     = 0x650, 
+    ControllerButtonDownEventType     = 0x651, 
+    ControllerButtonUpEventType       = 0x652, 
+    ControllerDeviceAddedEventType    = 0x653, 
+    ControllerDevicereMovedEventType  = 0x654, 
+    ControllerDevicereMappedEventType = 0x655, 
+    FingerDownEventType               = 0x700,
+    FingerUpEventType                 = 0x701,
+    FingerMotionEventType             = 0x702,
+    DollarGestureEventType            = 0x800,
+    DollarRecordEventType             = 0x801,
+    MultiGestureEventType             = 0x802,
+    ClipboardUpdateEventType          = 0x900, 
+    DropFileEventType                 = 0x1000,
+    UserEventType                     = 0x8000,
+    LastEventType                     = 0xFFFF,
 }
 
 pub enum Event {
     NoEvent,
     CommonEvent(u32),
-    WindowEvent(u32, ~video::Window, video::WindowEventID, i32, i32),
-    /*KeyboardDownEvent(u32, ~video::Window, bool, ~keyboard::Keysym),
-    KeyboardUpEvent(u32, ~video::Window, bool, ~keyboard::Keysym),*/
+    WindowEvent(u32, ~Window, WindowEventID, i32, i32),
+    KeyboardDownEvent(u32, ~Window, bool, ~Keysym),
+    KeyboardUpEvent(u32, ~Window, bool, ~Keysym),
     QuitEvent(u32),
     UnhandeledEvent(u32),
 }
@@ -218,7 +153,7 @@ impl Event {
 
                     QuitEvent(event.time_stamp)
                 }
-/*                WindowEventType => {
+                WindowEventType => {
                     let event = raw.window();
 
                     let event = 
@@ -228,7 +163,7 @@ impl Event {
                             *event
                         };
                     WindowEvent(event.time_stamp, 
-                                video::Window::get_from_id(event.window_id).unwrap(),
+                                Window::get_from_id(event.window_id).unwrap(),
                                 num::from_u8(event.event).unwrap(),
                                 event.data1,
                                 event.data2)
@@ -243,9 +178,9 @@ impl Event {
                             *event
                         };
                     KeyboardDownEvent(event.time_stamp, 
-                                      video::Window::get_from_id(event.window_id).unwrap(),
+                                      Window::get_from_id(event.window_id).unwrap(),
                                       event.repeat != 0,
-                                      keyboard::Keysym::wrap(&event.keysym))
+                                      Keysym::wrap(&event.keysym))
                 }
 
                 KeyUpEventType => {
@@ -257,12 +192,12 @@ impl Event {
                             *event
                         };
                     KeyboardUpEvent(event.time_stamp, 
-                                      video::Window::get_from_id(event.window_id).unwrap(),
+                                      Window::get_from_id(event.window_id).unwrap(),
                                       event.repeat != 0,
-                                      keyboard::Keysym::wrap(&event.keysym))
+                                      Keysym::wrap(&event.keysym))
 
                 }
-*/
+
                 _ => {
                     UnhandeledEvent(raw_type)
                 }

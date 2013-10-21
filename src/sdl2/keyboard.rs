@@ -8,22 +8,6 @@ pub mod ffi {
     pub type SDL_Scancode = int32_t;
     pub type SDL_Keycode = int32_t;
 
-    pub enum SDL_Keymod{
-        KMOD_NONE = 0x0000,
-        KMOD_LSHIFT = 0x0001,
-        KMOD_RSHIFT = 0x0002,
-        KMOD_LCTRL = 0x0040,
-        KMOD_RCTRL = 0x0080,
-        KMOD_LALT = 0x0100,
-        KMOD_RALT = 0x0200,
-        KMOD_LGUI = 0x0400,
-        KMOD_RGUI = 0x0800,
-        KMOD_NUM = 0x1000,
-        KMOD_CAPS = 0x2000,
-        KMOD_MODE = 0x4000,
-        KMOD_RESERVED = 0x8000,
-    }
-
     pub struct SDL_Keysym {
         scancode: SDL_Scancode,
         sym: SDL_Keycode,
@@ -33,19 +17,19 @@ pub mod ffi {
 }
 
 pub enum Keymod {
-    KMOD_None = ffi::KMOD_NONE as u16,
-    KMOD_LShift = ffi::KMOD_LSHIFT as u16,
-    KMOD_RShift = ffi::KMOD_RSHIFT as u16,
-    KMOD_LCtrl = ffi::KMOD_LCTRL as u16,
-    KMOD_RCtrl = ffi::KMOD_RCTRL as u16,
-    KMOD_LAlt = ffi::KMOD_LALT as u16,
-    KMOD_RAlt = ffi::KMOD_RALT as u16,
-    KMOD_LGui = ffi::KMOD_LGUI as u16,
-    KMOD_RGui = ffi::KMOD_RGUI as u16,
-    KMOD_Num = ffi::KMOD_NUM as u16,
-    KMOD_Caps = ffi::KMOD_CAPS as u16,
-    KMOD_Mode = ffi::KMOD_MODE as u16,
-    KMOD_Reserved = ffi::KMOD_RESERVED as u16,
+    KMOD_None     = 0x0000,
+    KMOD_LShift   = 0x0001,
+    KMOD_RShift   = 0x0002,
+    KMOD_LCtrl    = 0x0040,
+    KMOD_RCtrl    = 0x0080,
+    KMOD_LAlt     = 0x0100,
+    KMOD_RAlt     = 0x0200,
+    KMOD_LGui     = 0x0400,
+    KMOD_RGui     = 0x0800,
+    KMOD_Num      = 0x1000,
+    KMOD_Caps     = 0x2000,
+    KMOD_Mode     = 0x4000,
+    KMOD_Reserved = 0x8000,
 }
 
 impl Keymod {
