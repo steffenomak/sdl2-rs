@@ -12,6 +12,7 @@ pub mod ffi {
 
     externfn!(fn SDL_DestroyWindow(window: *SDL_Window))
     externfn!(fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window)
+    externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
 }
 
 pub enum WindowFlags {
@@ -95,6 +96,18 @@ impl Window {
             } else {
                 Ok(~Window{raw: raw, owned: false})
             }
+        }
+    }
+
+    pub fn get_swap_interval() -> Result<bool, ~str> {
+        let i = unsafe {
+            ffi::SDL_GL_GetSwapInterval()
+        };
+
+        match i {
+            0 => Ok(false),
+            1 => Ok(true),
+            _ => Err(get_error()),
         }
     }
 }
