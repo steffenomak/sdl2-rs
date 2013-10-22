@@ -13,6 +13,7 @@ pub mod ffi {
     externfn!(fn SDL_DestroyWindow(window: *SDL_Window))
     externfn!(fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window)
     externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
+    externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
 }
 
 pub enum WindowFlags {
@@ -48,6 +49,12 @@ pub enum WindowEventID {
     FocusGainedEvent = 12_u8,
     FocusLostEvent   = 13_u8,
     CloseEvent       = 14_u8,
+}
+
+pub enum SwapSettings {
+    Imidiet = 0,
+    Syncronized = 1,
+    LateSwapping = -1,
 }
 
 pub struct Window {
@@ -108,6 +115,16 @@ impl Window {
             0 => Ok(false),
             1 => Ok(true),
             _ => Err(get_error()),
+        }
+    }
+
+    pub fn set_swap_interval(setting: SwapSettings) -> bool {
+        unsafe {
+            match ffi::SDL_GL_SetSwapInterval(setting as i32) {
+                -1 => false,
+                0 => true,
+                _ => false,
+            }
         }
     }
 }
