@@ -26,6 +26,16 @@ fn main() {
            },
            sdl2::KeyboardUpEvent(_, _, _, keysym) => check_key_works(keysym),
            sdl2::UnhandeledEvent(ev) => println(format!("Event: {:x}", ev)),
+           sdl2::MouseButtonDownEvent(_, _, btn, _, x, y) => {
+               print(format!("x: {:i}, y: {:i} ", x, y));
+               match btn {
+                   sdl2::LeftButton => println("Left Mouse Button"),
+                   sdl2::MiddleButton => println("Middle Mouse Button"),
+                   sdl2::RightButton => println("Right Mouse Button"),
+                   _ => println("Other"),
+               }
+           },
+
            _ => {},
        }
    }
