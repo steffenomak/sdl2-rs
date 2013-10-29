@@ -11,6 +11,8 @@ pub use scancode::*;
 pub use video::*;
 pub use keyboard::*;
 pub use mouse::*;
+pub use pixel::*;
+pub use surface::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -26,3 +28,6 @@ pub mod scancode;
 pub mod video;
 pub mod keyboard;
 pub mod mouse;
+pub mod pixel;
+pub mod surface;
+

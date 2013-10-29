@@ -1,21 +1,21 @@
 pub mod ffi {
-    use std::libc::{uint8_t, uint32_t, c_int}
+    use std::libc::{uint8_t, uint32_t, c_int};
 
-    pub mod SDL_Color {
+    pub struct SDL_Color {
         r: uint8_t,
         g: uint8_t,
         b: uint8_t,
         a: uint8_t,
     }
 
-    pub mod SDL_Palette {
+    pub struct SDL_Palette {
         ncolors: c_int,
-        colors: *SDL_Colors,
+        colors: *SDL_Color,
         version: uint32_t,
         refcount: c_int,
     }
 
-    pub mod SDL_PixelFormat {
+    pub struct SDL_PixelFormat {
         format: uint32_t,
         palette: *SDL_Palette,
         BitsPerPixel: uint8_t,
@@ -37,8 +37,8 @@ pub mod ffi {
         next: *SDL_PixelFormat,
     }
 
-    int refcount;
-    struct SDL_PixelFormat *next;
+    externfn!(fn SDL_AllocPalette(ncolors: c_int) -> *SDL_Palette) 
+    externfn!(fn SDL_FreePalette(palette: *SDL_Palette))
 }
 
 pub enum PixelFormatFlag {
@@ -79,14 +79,36 @@ pub enum PixelFormatFlag {
     UYVY        = 0x59565955,
     YVYU        = 0x55595659,
 }
-
-pub enum Color {
-    RGB(u8, u8, u8),
-    RGBA(u8, u8, u8, u8),
+pub struct Color {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: u8,
 }
 
 pub struct Palette {
     raw: *ffi::SDL_Palette,
-    owned: bool.
+}
+
+impl Palette {
+    fn alloc_new(num_col: i32) -> Result<Palette, ~str> {
+        unsafe {
+            let raw_pal = ffi::SDL_AllocPalette(num_col);
+
+            if raw_pal.is_null() {
+                Err(~"Faild to allocate a new palette")
+            } else {
+                Ok(Palette { raw: raw_pal })
+            }
+        }
+    }
+}
+
+impl Drop for Palette {
+    fn drop(&mut self) {
+        unsafe {
+            ffi::SDL_FreePalette(self.raw);
+        }
+    }
 }
 

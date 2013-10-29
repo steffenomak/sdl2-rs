@@ -8,6 +8,14 @@ fn check_key_works(keysym: ~sdl2::Keysym) {
     }
 }
 
+fn handle_window_event(ev: sdl2::WindowEventID) {
+    match ev {
+        sdl2::MovedEvent => println("Moved"),
+        sdl2::FocusLostEvent => println("Focus lost"),
+        _ => println("Other"),
+    }
+}
+
 fn main() {
     sdl2::init([sdl2::InitVideo]);
 
@@ -35,6 +43,7 @@ fn main() {
                    _ => println("Other"),
                }
            },
+           sdl2::WindowEvent(_, _, ev, _, _) => handle_window_event(ev),
 
            _ => {},
        }
