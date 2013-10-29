@@ -1,3 +1,6 @@
+mod types;
+
+
 #[deriving(Clone)]
 pub struct Rect {
     x: i32, y: i32,
@@ -15,7 +18,8 @@ pub mod ffi {
     use rect::Rect;
     use rect::Point;
 
-    type SDL_bool = c_int;
+    use super::types::ffi::*;
+
 
     type SDL_Rect = Rect;
     type SDL_Point = Point;
@@ -37,7 +41,7 @@ impl Rect {
 
     pub fn has_intersection(&self, other: &Rect) -> bool {
         unsafe {
-            ffi::SDL_HasIntersection(self, other) == 1
+            ffi::SDL_HasIntersection(self, other) == types::ffi::SDL_TRUE 
         }
     }
 
@@ -45,7 +49,7 @@ impl Rect {
         let out: Rect = Rect::new(0, 0, 0, 0);
 
         let result = unsafe {
-            ffi::SDL_IntersectRect(self, other, &out) == 1
+            ffi::SDL_IntersectRect(self, other, &out) == types::ffi::SDL_TRUE
         };
 
         match result {
@@ -61,7 +65,7 @@ impl Rect {
         let res = unsafe {
             ffi::SDL_IntersectRectAndLine(self, 
                                           &out_start.x, &out_start.y, 
-                                          &out_end.x, &out_end.y) == 1
+                                          &out_end.x, &out_end.y) == types::ffi::SDL_TRUE
         };
 
         match res {
