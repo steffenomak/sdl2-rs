@@ -1,3 +1,5 @@
+use error::get_error;
+
 pub mod ffi {
     use std::libc::{uint8_t, uint32_t, c_int};
 
@@ -38,9 +40,12 @@ pub mod ffi {
     }
 
     externfn!(fn SDL_AllocPalette(ncolors: c_int) -> *SDL_Palette) 
+    externfn!(fn SDL_AllocFormat(pixel_format: uint32_t) -> *SDL_PixelFormat)
     externfn!(fn SDL_FreePalette(palette: *SDL_Palette))
+    externfn!(fn SDL_FreeFormat(format: *SDL_PixelFormat))
 }
 
+#[deriving(FromPrimitive)]
 pub enum PixelFormatFlag {
     Unknown     = 0x0,
     Index1LSB   = 0x11100100,
@@ -90,6 +95,10 @@ pub struct Palette {
     raw: *ffi::SDL_Palette,
 }
 
+pub struct PixelFormat {
+    raw: *ffi::SDL_PixelFormat,
+}
+
 impl Palette {
     fn alloc_new(num_col: i32) -> Result<Palette, ~str> {
         unsafe {
@@ -108,6 +117,28 @@ impl Drop for Palette {
     fn drop(&mut self) {
         unsafe {
             ffi::SDL_FreePalette(self.raw);
+        }
+    }
+}
+
+impl PixelFormat {
+    fn alloc_new(format: PixelFormatFlag) -> Result<PixelFormat, ~str> {
+        unsafe {
+            let raw_pix = ffi::SDL_AllocFormat(format as u32);
+
+            if raw_pix.is_null() {
+                Err(get_error())
+            } else {
+                Ok(PixelFormat { raw: raw_pix })
+            }
+        }
+    }
+}
+
+impl Drop for PixelFormat {
+    fn drop(&mut self) {
+        unsafe {
+            ffi::SDL_FreeFormat(self.raw);
         }
     }
 }
