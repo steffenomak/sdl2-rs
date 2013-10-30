@@ -219,13 +219,13 @@ impl PixelFormat {
         c
     }
 
-    fn map_rgb(&self, c: &Color) -> u32 {
+    fn map_rgb(&self, c: Color) -> u32 {
         unsafe {
             ffi::SDL_MapRGB(self.raw, c.r, c.g, c.b)
         }
     }
 
-    fn map_rgba(&self, c: &Color) -> u32 {
+    fn map_rgba(&self, c: Color) -> u32 {
         unsafe {
             ffi::SDL_MapRGBA(self.raw, c.r, c.g, c.b, c.a)
         }
