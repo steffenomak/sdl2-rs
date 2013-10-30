@@ -14,6 +14,7 @@ pub use mouse::*;
 pub use pixel::*;
 pub use surface::*;
 pub use render::*;
+pub use timer::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -32,4 +33,4 @@ pub mod mouse;
 pub mod pixel;
 pub mod surface;
 pub mod render;
-
+pub mod timer;
