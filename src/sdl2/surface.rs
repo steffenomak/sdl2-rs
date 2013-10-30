@@ -73,7 +73,7 @@ pub struct Surface {
 }
 
 impl Surface {
-    fn blit_scaled(&self, 
+    pub fn blit_scaled(&self, 
                    dest_rect: Option<Rect>,
                    src: &Surface,
                    src_rect: Option<Rect>) -> bool {
@@ -93,7 +93,7 @@ impl Surface {
         }
     }
 
-    fn blit_surface(&self, 
+    pub fn blit_surface(&self, 
                     dest_rect: Option<Rect>,
                     src: &Surface,
                     src_rect: Option<Rect>) -> bool {
@@ -113,7 +113,7 @@ impl Surface {
         }
     }
 
-    fn convert_surface(&self, fmt: &PixelFormat) -> Result<Surface, ~str> {
+    pub fn convert_surface(&self, fmt: &PixelFormat) -> Result<Surface, ~str> {
         unsafe {
             let surf = ffi::SDL_ConvertSurface(self.raw, fmt.raw, 0);
 
@@ -125,7 +125,7 @@ impl Surface {
         }
     }
 
-    fn convert_surface_format(&self, 
+    pub fn convert_surface_format(&self, 
                               fmt: PixelFormatFlag) -> Result<Surface, ~str> {
         unsafe {
             let surf = ffi::SDL_ConvertSurfaceFormat(self.raw, fmt as u32, 0);
@@ -138,7 +138,7 @@ impl Surface {
         }
     }
 
-    fn create_rgb_surface(w:      i32,
+    pub fn create_rgb_surface(w:      i32,
                           h:      i32,
                           bpp:    i32,
                           r_mask: u32,
@@ -160,7 +160,7 @@ impl Surface {
         }
     }
 
-    fn fill_rect(&self, rect: Rect, color: Color) -> bool {
+    pub fn fill_rect(&self, rect: Rect, color: Color) -> bool {
         unsafe {
             let c = PixelFormat{raw: (*self.raw).format, owned: false};
             let c = c.map_rgba(color);
@@ -171,7 +171,7 @@ impl Surface {
         }
     }
     
-    fn fill_rects(&self, rects: &[Rect], color: Color) -> bool {
+    pub fn fill_rects(&self, rects: &[Rect], color: Color) -> bool {
         unsafe {
             let c = PixelFormat{raw: (*self.raw).format, owned: false};
             let c = c.map_rgba(color);
@@ -182,7 +182,7 @@ impl Surface {
         }
     }
 
-    fn load_bmp(file: ~str) -> Result<Surface, ~str> {
+    pub fn load_bmp(file: ~str) -> Result<Surface, ~str> {
         unsafe {
             let surf = do file.with_c_str |buf| {
                 ffi::SDL_LoadBMP(buf)
@@ -196,7 +196,7 @@ impl Surface {
         }
     }
 
-    fn save_bmp(&self, file: ~str) -> bool {
+    pub fn save_bmp(&self, file: ~str) -> bool {
         unsafe {
             do file.with_c_str |buf| {
                 ffi::SDL_SaveBMP(self.raw, buf) == 0
@@ -204,19 +204,19 @@ impl Surface {
         }
     }
 
-    fn lock(&self) -> bool {
+    pub fn lock(&self) -> bool {
         unsafe {
             ffi::SDL_LockSurface(self.raw) == 0
         }
     }
 
-    fn unlock(&self) {
+    pub fn unlock(&self) {
         unsafe {
             ffi::SDL_UnlockSurface(self.raw);
         }
     }
 
-    fn set_color_key(&self, set: bool, key: Color) -> bool {
+    pub fn set_color_key(&self, set: bool, key: Color) -> bool {
         unsafe {
             let c = PixelFormat{raw: (*self.raw).format, owned: false};
             let c = c.map_rgba(key);
@@ -225,7 +225,7 @@ impl Surface {
         }
     }
 
-    fn get_color_key(&self) -> Result<Color, ~str> {
+    pub fn get_color_key(&self) -> Result<Color, ~str> {
         unsafe {
             let color_key = 0u32;
             let c = PixelFormat{raw: (*self.raw).format, owned: false};
@@ -237,7 +237,7 @@ impl Surface {
         }
     }
 
-    fn set_rle(&self, set: bool) -> bool {
+    pub fn set_rle(&self, set: bool) -> bool {
         unsafe {
             ffi::SDL_SetSurfaceRLE(self.raw, set as i32) == 0
         }
