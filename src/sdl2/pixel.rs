@@ -140,6 +140,15 @@ pub struct Color {
     a: u8,
 }
 
+impl Color {
+    pub fn new(r: u8, 
+               g: u8,
+               b: u8,
+               a: u8) -> Color {
+        Color {r: r, g: g, b: b, a: a}
+    }
+}
+
 pub struct Palette {
     raw: *ffi::SDL_Palette,
     owned: bool,
