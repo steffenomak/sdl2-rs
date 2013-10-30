@@ -13,6 +13,7 @@ pub use keyboard::*;
 pub use mouse::*;
 pub use pixel::*;
 pub use surface::*;
+pub use render::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -30,4 +31,5 @@ pub mod keyboard;
 pub mod mouse;
 pub mod pixel;
 pub mod surface;
+pub mod render;
 
