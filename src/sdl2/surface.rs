@@ -1,9 +1,12 @@
 use std::ptr;
 use rect::Rect;
+use pixel::{PixelFormat, PixelFormatFlag, Color};
+use error::get_error;
+use std::vec;
 
 pub mod ffi {
     use pixel::ffi::SDL_PixelFormat;
-    use std::libc::{c_int, c_void};
+    use std::libc::{c_int, uint32_t, c_void, c_char};
     use rect::Rect;
 
     pub struct SDL_BlitMap;
@@ -30,6 +33,37 @@ pub mod ffi {
                                  srcrect: *Rect,
                                  dst: *SDL_Surface,
                                  destrect: *Rect) -> c_int)
+    externfn!(fn SDL_ConvertSurface(src: *SDL_Surface, 
+                                    fmt: *SDL_PixelFormat,
+                                    flags: uint32_t) -> *SDL_Surface)
+    externfn!(fn SDL_ConvertSurfaceFormat(src: *SDL_Surface, 
+                                          pixel_format: uint32_t,
+                                          flags: uint32_t) -> *SDL_Surface)
+    externfn!(fn SDL_CreateRGBSurface(flags: uint32_t, 
+                                      width: c_int,
+                                      height: c_int,
+                                      depth: c_int,
+                                      Rmask: uint32_t,
+                                      Gmask: uint32_t,
+                                      Bmask: uint32_t,
+                                      Amask: uint32_t) -> *SDL_Surface)
+    externfn!(fn SDL_FillRect(dst: *SDL_Surface, 
+                              rect: *Rect, 
+                              color: uint32_t) -> c_int)
+    externfn!(fn SDL_FillRects(dst: *SDL_Surface, 
+                               rects: *Rect,
+                               count: c_int,
+                               color: uint32_t) -> c_int)
+    externfn!(fn SDL_FreeSurface(surface: *SDL_Surface))
+    externfn!(fn SDL_LoadBMP(file: *c_char) -> *SDL_Surface)
+    externfn!(fn SDL_LockSurface(surface: *SDL_Surface) -> c_int)
+    externfn!(fn SDL_SaveBMP(surface: *SDL_Surface, file: *c_char) -> c_int)
+    externfn!(fn SDL_SetColorKey(surface: *SDL_Surface, 
+                                 flag: c_int,
+                                 key: uint32_t) -> c_int)
+    externfn!(fn SDL_GetColorKey(surface: *SDL_Surface, 
+                                 key: *uint32_t) -> c_int)
+    externfn!(fn SDL_UnlockSurface(surface: *SDL_Surface))
 }
 
 pub struct Surface {
@@ -77,4 +111,137 @@ impl Surface {
                                  }) == 0
         }
     }
+
+    fn convert_surface(&self, fmt: &PixelFormat) -> Result<Surface, ~str> {
+        unsafe {
+            let surf = ffi::SDL_ConvertSurface(self.raw, fmt.raw, 0);
+
+            if surf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(Surface{ raw: surf, owned: true })
+            }
+        }
+    }
+
+    fn convert_surface_format(&self, 
+                              fmt: PixelFormatFlag) -> Result<Surface, ~str> {
+        unsafe {
+            let surf = ffi::SDL_ConvertSurfaceFormat(self.raw, fmt as u32, 0);
+
+            if surf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(Surface { raw: surf, owned: true })
+            }
+        }
+    }
+
+    fn create_rgb_surface(w:      i32,
+                          h:      i32,
+                          bpp:    i32,
+                          r_mask: u32,
+                          g_mask: u32,
+                          b_mask: u32,
+                          a_mask: u32) -> Result<Surface, ~str> {
+        unsafe {
+            let surf = ffi::SDL_CreateRGBSurface(0, w, h, bpp, 
+                                                 r_mask,
+                                                 g_mask,
+                                                 b_mask,
+                                                 a_mask);
+
+            if surf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(Surface{ raw: surf, owned: true })
+            }
+        }
+    }
+
+    fn fill_rect(&self, rect: Rect, color: Color) -> bool {
+        unsafe {
+            let c = PixelFormat{raw: (*self.raw).format, owned: false};
+            let c = c.map_rgba(color);
+
+            ffi::SDL_FillRect(self.raw, 
+                              ptr::to_unsafe_ptr(&rect),
+                              c) == 0
+        }
+    }
+    
+    fn fill_rects(&self, rects: &[Rect], color: Color) -> bool {
+        unsafe {
+            let c = PixelFormat{raw: (*self.raw).format, owned: false};
+            let c = c.map_rgba(color);
+
+            ffi::SDL_FillRects(self.raw, 
+                               vec::raw::to_ptr(rects), 
+                               rects.len() as i32, c) == 0
+        }
+    }
+
+    fn load_bmp(file: ~str) -> Result<Surface, ~str> {
+        unsafe {
+            let surf = do file.with_c_str |buf| {
+                ffi::SDL_LoadBMP(buf)
+            };
+
+            if surf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(Surface{ raw: surf, owned: true })
+            }
+        }
+    }
+
+    fn save_bmp(&self, file: ~str) -> bool {
+        unsafe {
+            do file.with_c_str |buf| {
+                ffi::SDL_SaveBMP(self.raw, buf) == 0
+            }
+        }
+    }
+
+    fn lock(&self) -> bool {
+        unsafe {
+            ffi::SDL_LockSurface(self.raw) == 0
+        }
+    }
+
+    fn unlock(&self) {
+        unsafe {
+            ffi::SDL_UnlockSurface(self.raw);
+        }
+    }
+
+    fn set_color_key(&self, set: bool, key: Color) -> bool {
+        unsafe {
+            let c = PixelFormat{raw: (*self.raw).format, owned: false};
+            let c = c.map_rgba(key);
+
+            ffi::SDL_SetColorKey(self.raw, set as i32, c) == 0
+        }
+    }
+
+    fn get_color_key(&self) -> Result<Color, ~str> {
+        unsafe {
+            let color_key = 0u32;
+            let c = PixelFormat{raw: (*self.raw).format, owned: false};
+
+            match ffi::SDL_GetColorKey(self.raw, &color_key) {
+                0 => Ok(c.get_rgba(color_key)),
+                _ => Err(get_error()),
+            }
+        }
+    }
 }
+
+impl Drop for Surface {
+    fn drop(&mut self) {
+        if self.owned {
+            unsafe { ffi::SDL_FreeSurface(self.raw); }
+        }
+    }
+}
+
