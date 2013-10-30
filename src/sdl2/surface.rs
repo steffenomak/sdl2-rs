@@ -64,6 +64,7 @@ pub mod ffi {
     externfn!(fn SDL_GetColorKey(surface: *SDL_Surface, 
                                  key: *uint32_t) -> c_int)
     externfn!(fn SDL_UnlockSurface(surface: *SDL_Surface))
+    externfn!(fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int)
 }
 
 pub struct Surface {
@@ -233,6 +234,12 @@ impl Surface {
                 0 => Ok(c.get_rgba(color_key)),
                 _ => Err(get_error()),
             }
+        }
+    }
+
+    fn set_rle(&self, set: bool) -> bool {
+        unsafe {
+            ffi::SDL_SetSurfaceRLE(self.raw, set as i32) == 0
         }
     }
 }
