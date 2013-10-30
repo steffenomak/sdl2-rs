@@ -6,7 +6,7 @@ use std::vec;
 
 pub mod ffi {
     use pixel::ffi::SDL_PixelFormat;
-    use std::libc::{c_int, uint32_t, c_void, c_char};
+    use std::libc::{c_int, uint32_t, c_void};
     use rect::Rect;
 
     pub struct SDL_BlitMap;
@@ -55,9 +55,7 @@ pub mod ffi {
                                count: c_int,
                                color: uint32_t) -> c_int)
     externfn!(fn SDL_FreeSurface(surface: *SDL_Surface))
-    externfn!(fn SDL_LoadBMP(file: *c_char) -> *SDL_Surface)
     externfn!(fn SDL_LockSurface(surface: *SDL_Surface) -> c_int)
-    externfn!(fn SDL_SaveBMP(surface: *SDL_Surface, file: *c_char) -> c_int)
     externfn!(fn SDL_SetColorKey(surface: *SDL_Surface, 
                                  flag: c_int,
                                  key: uint32_t) -> c_int)
@@ -179,28 +177,6 @@ impl Surface {
             ffi::SDL_FillRects(self.raw, 
                                vec::raw::to_ptr(rects), 
                                rects.len() as i32, c) == 0
-        }
-    }
-
-    pub fn load_bmp(file: ~str) -> Result<Surface, ~str> {
-        unsafe {
-            let surf = do file.with_c_str |buf| {
-                ffi::SDL_LoadBMP(buf)
-            };
-
-            if surf.is_null() {
-                Err(get_error())
-            } else {
-                Ok(Surface{ raw: surf, owned: true })
-            }
-        }
-    }
-
-    pub fn save_bmp(&self, file: ~str) -> bool {
-        unsafe {
-            do file.with_c_str |buf| {
-                ffi::SDL_SaveBMP(self.raw, buf) == 0
-            }
         }
     }
 
