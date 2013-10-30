@@ -151,7 +151,7 @@ pub struct PixelFormat {
 }
 
 impl Palette {
-    fn alloc_new(num_col: i32) -> Result<Palette, ~str> {
+    pub fn alloc_new(num_col: i32) -> Result<Palette, ~str> {
         unsafe {
             let raw_pal = ffi::SDL_AllocPalette(num_col);
 
@@ -163,7 +163,7 @@ impl Palette {
         }
     }
 
-    fn set_colors(&self,
+    pub fn set_colors(&self,
                   colors: &[Color],
                   first_color: i32,
                   ncolors: i32) -> bool {
@@ -187,7 +187,7 @@ impl Drop for Palette {
 }
 
 impl PixelFormat {
-    fn alloc_new(format: PixelFormatFlag) -> Result<PixelFormat, ~str> {
+    pub fn alloc_new(format: PixelFormatFlag) -> Result<PixelFormat, ~str> {
         unsafe {
             let raw_pix = ffi::SDL_AllocFormat(format as u32);
 
@@ -199,7 +199,7 @@ impl PixelFormat {
         }
     }
 
-    fn get_rgb(&self, pixel: u32) -> Color {
+    pub fn get_rgb(&self, pixel: u32) -> Color {
         let c = Color {r: 0, g: 0, b: 0, a:0};
 
         unsafe {
@@ -209,7 +209,7 @@ impl PixelFormat {
         c
     }
 
-    fn get_rgba(&self, pixel: u32) -> Color {
+    pub fn get_rgba(&self, pixel: u32) -> Color {
         let c = Color {r: 0, g: 0, b: 0, a:0};
 
         unsafe {
@@ -219,19 +219,19 @@ impl PixelFormat {
         c
     }
 
-    fn map_rgb(&self, c: Color) -> u32 {
+    pub fn map_rgb(&self, c: Color) -> u32 {
         unsafe {
             ffi::SDL_MapRGB(self.raw, c.r, c.g, c.b)
         }
     }
 
-    fn map_rgba(&self, c: Color) -> u32 {
+    pub fn map_rgba(&self, c: Color) -> u32 {
         unsafe {
             ffi::SDL_MapRGBA(self.raw, c.r, c.g, c.b, c.a)
         }
     }
 
-    fn set_palette(&self, palette: &Palette) -> bool {
+    pub fn set_palette(&self, palette: &Palette) -> bool {
         unsafe {
             ffi::SDL_SetPixelFormatPalette(self.raw, palette.raw) == 0
         }
