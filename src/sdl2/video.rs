@@ -18,6 +18,7 @@ pub mod ffi {
     externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
     externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
     externfn!(fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface)
+    externfn!(fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int)
 }
 
 pub enum WindowFlags {
@@ -140,6 +141,17 @@ impl Window {
                 Err(get_error())
             } else {
                 Ok(Surface{ raw: surf, owned: false })
+            }
+        }
+    }
+
+    pub fn update_surface(&self) -> bool {
+        unsafe {
+            if ptr::is_null(self.raw) {
+                println("Surface is null");
+                false
+            } else {
+                ffi::SDL_UpdateWindowSurface(self.raw) == 0
             }
         }
     }
