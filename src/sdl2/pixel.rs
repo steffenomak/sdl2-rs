@@ -142,10 +142,12 @@ pub struct Color {
 
 pub struct Palette {
     raw: *ffi::SDL_Palette,
+    owned: bool,
 }
 
 pub struct PixelFormat {
     raw: *ffi::SDL_PixelFormat,
+    owned: bool,
 }
 
 impl Palette {
@@ -156,7 +158,7 @@ impl Palette {
             if raw_pal.is_null() {
                 Err(~"Faild to allocate a new palette")
             } else {
-                Ok(Palette { raw: raw_pal })
+                Ok(Palette { raw: raw_pal, owned: true })
             }
         }
     }
@@ -177,7 +179,9 @@ impl Palette {
 impl Drop for Palette {
     fn drop(&mut self) {
         unsafe {
-            ffi::SDL_FreePalette(self.raw);
+            if self.owned {
+                ffi::SDL_FreePalette(self.raw);
+            }
         }
     }
 }
@@ -190,7 +194,7 @@ impl PixelFormat {
             if raw_pix.is_null() {
                 Err(get_error())
             } else {
-                Ok(PixelFormat { raw: raw_pix })
+                Ok(PixelFormat { raw: raw_pix, owned: true })
             }
         }
     }
@@ -237,7 +241,9 @@ impl PixelFormat {
 impl Drop for PixelFormat {
     fn drop(&mut self) {
         unsafe {
-            ffi::SDL_FreeFormat(self.raw);
+            if self.owned {
+                ffi::SDL_FreeFormat(self.raw);
+            }
         }
     }
 }
