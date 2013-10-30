@@ -12,6 +12,7 @@ pub mod ffi {
     pub struct SDL_BlitMap;
 
     pub struct SDL_Surface {
+        flags: uint32_t,
         format: *SDL_PixelFormat,
         x: c_int,
         y: c_int,
@@ -25,14 +26,10 @@ pub mod ffi {
         refcount: c_int,
     }
 
-    externfn!(fn BlitScaled(src: *SDL_Surface, 
-                            srcrect: *Rect,
-                            dst: *SDL_Surface,
-                            dstrect: *Rect) -> c_int)
-    externfn!(fn SDL_BlitSurface(src: *SDL_Surface, 
-                                 srcrect: *Rect,
-                                 dst: *SDL_Surface,
-                                 destrect: *Rect) -> c_int)
+    externfn!(fn SDL_UpperBlit(src: *SDL_Surface, 
+                               srcrect: *Rect,
+                               dst: *SDL_Surface,
+                               destrect: *Rect) -> c_int)
     externfn!(fn SDL_ConvertSurface(src: *SDL_Surface, 
                                     fmt: *SDL_PixelFormat,
                                     flags: uint32_t) -> *SDL_Surface)
@@ -71,43 +68,23 @@ pub struct Surface {
 }
 
 impl Surface {
-    pub fn blit_scaled(&self, 
-                   dest_rect: Option<Rect>,
-                   src: &Surface,
-                   src_rect: Option<Rect>) -> bool {
-        unsafe {
-            ffi::BlitScaled(src.raw, 
-                            if src_rect.is_none() {
-                                ptr::null() 
-                            } else {
-                                ptr::to_unsafe_ptr(&src_rect.unwrap())
-                            },
-                            self.raw,
-                            if dest_rect.is_none() {
-                                ptr::null() 
-                            } else {
-                                ptr::to_unsafe_ptr(&dest_rect.unwrap())
-                            }) == 0
-        }
-    }
-
     pub fn blit_surface(&self, 
                     dest_rect: Option<Rect>,
                     src: &Surface,
                     src_rect: Option<Rect>) -> bool {
         unsafe {
-            ffi::SDL_BlitSurface(src.raw, 
-                                 if src_rect.is_none() {
-                                     ptr::null() 
-                                 } else {
-                                     ptr::to_unsafe_ptr(&src_rect.unwrap())
-                                 },
-                                 self.raw,
-                                 if dest_rect.is_none() {
-                                     ptr::null() 
-                                 } else {
-                                     ptr::to_unsafe_ptr(&dest_rect.unwrap())
-                                 }) == 0
+            ffi::SDL_UpperBlit(src.raw, 
+                               if src_rect.is_none() {
+                                   ptr::null() 
+                               } else {
+                                   ptr::to_unsafe_ptr(&src_rect.unwrap())
+                               },
+                               self.raw,
+                               if dest_rect.is_none() {
+                                   ptr::null() 
+                               } else {
+                                   ptr::to_unsafe_ptr(&dest_rect.unwrap())
+                               }) == 0
         }
     }
 
