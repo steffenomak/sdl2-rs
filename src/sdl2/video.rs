@@ -1,8 +1,11 @@
 use error::*;
 use std::ptr;
+use surface::Surface;
 
 pub mod ffi {
     use std::libc::{c_int, uint32_t, c_char};
+    use surface::ffi::SDL_Surface;
+
     pub struct SDL_Window;
 
     externfn!(fn SDL_CreateWindow(title: *c_char, 
@@ -14,6 +17,7 @@ pub mod ffi {
     externfn!(fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window)
     externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
     externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
+    externfn!(fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface)
 }
 
 pub enum WindowFlags {
@@ -124,6 +128,18 @@ impl Window {
                 -1 => false,
                 0 => true,
                 _ => false,
+            }
+        }
+    }
+
+    pub fn get_surface(&self) -> Result<Surface, ~str> {
+        unsafe {
+            let surf = ffi::SDL_GetWindowSurface(self.raw);
+
+            if surf.is_null() {
+                Err(get_error())
+            } else {
+                Ok(Surface{ raw: surf, owned: false })
             }
         }
     }
