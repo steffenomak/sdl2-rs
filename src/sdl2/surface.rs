@@ -26,40 +26,42 @@ pub mod ffi {
         refcount: c_int,
     }
 
-    externfn!(fn SDL_UpperBlit(src: *SDL_Surface, 
-                               srcrect: *Rect,
-                               dst: *SDL_Surface,
-                               destrect: *Rect) -> c_int)
-    externfn!(fn SDL_ConvertSurface(src: *SDL_Surface, 
-                                    fmt: *SDL_PixelFormat,
-                                    flags: uint32_t) -> *SDL_Surface)
-    externfn!(fn SDL_ConvertSurfaceFormat(src: *SDL_Surface, 
-                                          pixel_format: uint32_t,
-                                          flags: uint32_t) -> *SDL_Surface)
-    externfn!(fn SDL_CreateRGBSurface(flags: uint32_t, 
-                                      width: c_int,
-                                      height: c_int,
-                                      depth: c_int,
-                                      Rmask: uint32_t,
-                                      Gmask: uint32_t,
-                                      Bmask: uint32_t,
-                                      Amask: uint32_t) -> *SDL_Surface)
-    externfn!(fn SDL_FillRect(dst: *SDL_Surface, 
-                              rect: *Rect, 
-                              color: uint32_t) -> c_int)
-    externfn!(fn SDL_FillRects(dst: *SDL_Surface, 
-                               rects: *Rect,
-                               count: c_int,
-                               color: uint32_t) -> c_int)
-    externfn!(fn SDL_FreeSurface(surface: *SDL_Surface))
-    externfn!(fn SDL_LockSurface(surface: *SDL_Surface) -> c_int)
-    externfn!(fn SDL_SetColorKey(surface: *SDL_Surface, 
-                                 flag: c_int,
-                                 key: uint32_t) -> c_int)
-    externfn!(fn SDL_GetColorKey(surface: *SDL_Surface, 
-                                 key: *uint32_t) -> c_int)
-    externfn!(fn SDL_UnlockSurface(surface: *SDL_Surface))
-    externfn!(fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int)
+    extern {
+        pub fn SDL_UpperBlit(src: *SDL_Surface, 
+                             srcrect: *Rect,
+                             dst: *SDL_Surface,
+                             destrect: *Rect) -> c_int;
+        pub fn SDL_ConvertSurface(src: *SDL_Surface, 
+                                  fmt: *SDL_PixelFormat,
+                                  flags: uint32_t) -> *SDL_Surface;
+        pub fn SDL_ConvertSurfaceFormat(src: *SDL_Surface, 
+                                        pixel_format: uint32_t,
+                                        flags: uint32_t) -> *SDL_Surface;
+        pub fn SDL_CreateRGBSurface(flags: uint32_t, 
+                                    width: c_int,
+                                    height: c_int,
+                                    depth: c_int,
+                                    Rmask: uint32_t,
+                                    Gmask: uint32_t,
+                                    Bmask: uint32_t,
+                                    Amask: uint32_t) -> *SDL_Surface;
+        pub fn SDL_FillRect(dst: *SDL_Surface, 
+                            rect: *Rect, 
+                            color: uint32_t) -> c_int;
+        pub fn SDL_FillRects(dst: *SDL_Surface, 
+                             rects: *Rect,
+                             count: c_int,
+                             color: uint32_t) -> c_int;
+        pub fn SDL_FreeSurface(surface: *SDL_Surface);
+        pub fn SDL_LockSurface(surface: *SDL_Surface) -> c_int;
+        pub fn SDL_SetColorKey(surface: *SDL_Surface, 
+                               flag: c_int,
+                               key: uint32_t) -> c_int;
+        pub fn SDL_GetColorKey(surface: *SDL_Surface, 
+                               key: *uint32_t) -> c_int;
+        pub fn SDL_UnlockSurface(surface: *SDL_Surface);
+        pub fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int;
+    }
 }
 
 pub struct Surface {

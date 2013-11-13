@@ -3,9 +3,11 @@ use std::str;
 pub mod ffi {
     use std::libc::c_char;
 
-    externfn!(fn SDL_ClearError())
-    externfn!(fn SDL_GetError() -> *c_char)
-    externfn!(fn SDL_SetError(err: *c_char))
+    extern {
+        pub fn SDL_ClearError();
+        pub fn SDL_GetError() -> *c_char;
+        pub fn SDL_SetError(err: *c_char);
+    }
 }
 
 pub fn clear_error() {

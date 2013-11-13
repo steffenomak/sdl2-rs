@@ -2,11 +2,13 @@ pub mod ffi {
     use std::libc::{uint32_t, c_int};
     pub type SDL_InitFlag = uint32_t;
 
-    externfn!(fn SDL_Init(flags: SDL_InitFlag) -> c_int)
-    externfn!(fn SDL_InitSubSystem(flags: SDL_InitFlag) -> c_int)
-    externfn!(fn SDL_Quit())
-    externfn!(fn SDL_QuitSubSystem(flags: SDL_InitFlag))
-    externfn!(fn SDL_WasInit(flags: SDL_InitFlag) -> SDL_InitFlag)
+    extern {
+        pub fn SDL_Init(flags: SDL_InitFlag) -> c_int;
+        pub fn SDL_InitSubSystem(flags: SDL_InitFlag) -> c_int;
+        pub fn SDL_Quit();
+        pub fn SDL_QuitSubSystem(flags: SDL_InitFlag);
+        pub fn SDL_WasInit(flags: SDL_InitFlag) -> SDL_InitFlag;
+    }
 }
 
 pub enum InitFlag {

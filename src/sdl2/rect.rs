@@ -24,14 +24,16 @@ pub mod ffi {
     type SDL_Rect = Rect;
     type SDL_Point = Point;
 
-    externfn!(fn SDL_HasIntersection(a: *SDL_Rect, b: *SDL_Rect) -> SDL_bool)
-    externfn!(fn SDL_IntersectRect(a: *SDL_Rect, b: *SDL_Rect, 
-                                   res: *SDL_Rect) -> SDL_bool) 
-    externfn!(fn SDL_IntersectRectAndLine(a: *SDL_Rect, 
-                                         x1: *c_int, y1: *c_int, 
-                                         x2: *c_int, y2: *c_int) -> SDL_bool)
-    externfn!(fn SDL_UnionRect(a: *SDL_Rect, b: *SDL_Rect, 
-                               res: *SDL_Rect))
+    extern {
+        pub fn SDL_HasIntersection(a: *SDL_Rect, b: *SDL_Rect) -> SDL_bool;
+        pub fn SDL_IntersectRect(a: *SDL_Rect, b: *SDL_Rect, 
+                                 res: *SDL_Rect) -> SDL_bool;
+        pub fn SDL_IntersectRectAndLine(a: *SDL_Rect, 
+                                        x1: *c_int, y1: *c_int, 
+                                        x2: *c_int, y2: *c_int) -> SDL_bool;
+        pub fn SDL_UnionRect(a: *SDL_Rect, b: *SDL_Rect, 
+                             res: *SDL_Rect);
+    }
 }
 
 impl Rect {

@@ -8,17 +8,19 @@ pub mod ffi {
 
     pub struct SDL_Window;
 
-    externfn!(fn SDL_CreateWindow(title: *c_char, 
-                                  x: c_int, y: c_int, 
-                                  w: c_int, h: c_int, 
-                                  flags: uint32_t) -> *SDL_Window)
+    extern {
+        pub fn SDL_CreateWindow(title: *c_char, 
+                                x: c_int, y: c_int, 
+                                w: c_int, h: c_int, 
+                                flags: uint32_t) -> *SDL_Window;
 
-    externfn!(fn SDL_DestroyWindow(window: *SDL_Window))
-    externfn!(fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window)
-    externfn!(fn SDL_GL_GetSwapInterval() -> c_int)
-    externfn!(fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int)
-    externfn!(fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface)
-    externfn!(fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int)
+        pub fn SDL_DestroyWindow(window: *SDL_Window);
+        pub fn SDL_GetWindowFromID(id: uint32_t) -> *SDL_Window;
+        pub fn SDL_GL_GetSwapInterval() -> c_int;
+        pub fn SDL_GL_SetSwapInterval(interval: c_int) -> c_int;
+        pub fn SDL_GetWindowSurface(window: *SDL_Window) -> *SDL_Surface;
+        pub fn SDL_UpdateWindowSurface(window: *SDL_Window) -> c_int;
+    }
 }
 
 pub enum WindowFlags {

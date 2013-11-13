@@ -143,9 +143,11 @@ pub mod ffi {
             unsafe { cast::transmute_copy(&ptr::to_unsafe_ptr(self)) }
         }
     }
-    
-    externfn!(fn SDL_PollEvent(event: *SDL_Event) -> c_int)
-    externfn!(fn SDL_WaitEvent(event: *SDL_Event) -> c_int)
+
+    extern {
+        pub fn SDL_PollEvent(event: *SDL_Event) -> c_int;
+        pub fn SDL_WaitEvent(event: *SDL_Event) -> c_int;
+    }
 }
 
 #[deriving(FromPrimitive)]
