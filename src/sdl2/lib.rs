@@ -16,6 +16,7 @@ pub use surface::*;
 pub use render::*;
 pub use timer::*;
 pub use rwops::*;
+pub use blend_mode::*;
 
 mod linkage {
     #[link_args="-lSDL2"]
@@ -36,3 +37,4 @@ pub mod surface;
 pub mod render;
 pub mod timer;
 pub mod rwops;
+pub mod blend_mode;
