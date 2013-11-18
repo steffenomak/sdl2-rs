@@ -72,10 +72,11 @@ pub struct Window {
 impl Drop for Window {
     fn drop(&mut self) {
         if self.owned {
+            debug!("Owned Window Drop");
             unsafe {
                 ffi::SDL_DestroyWindow(self.raw);
             }
-        }
+        } 
     }
 }
 
@@ -83,7 +84,7 @@ impl Window {
     pub fn new(title: &str, 
                x: i32, y: i32,
                w: i32, h: i32,
-               flags: &[WindowFlags]) -> Result<~Window, ~str> {
+               flags: &[WindowFlags]) -> Result<Window, ~str> {
         let f = do flags.iter().fold(0) |all, it| {
             all | *it as u32
         };
@@ -96,19 +97,19 @@ impl Window {
             if ptr::is_null(raw) {
                 Err(get_error())
             } else {
-                Ok(~Window{ raw: raw, owned: true })
+                Ok(Window{ raw: raw, owned: true })
             }
         }
     }
 
-    pub fn get_from_id(id: u32) -> Result<~Window, ~str> {
+    pub fn get_from_id(id: u32) -> Result<Window, ~str> {
         unsafe {
             let raw = ffi::SDL_GetWindowFromID(id);
 
             if ptr::is_null(raw) {
                 Err(get_error())
             } else {
-                Ok(~Window{raw: raw, owned: false})
+                Ok(Window{raw: raw, owned: false})
             }
         }
     }

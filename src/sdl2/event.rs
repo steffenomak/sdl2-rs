@@ -245,7 +245,7 @@ impl Event {
                     };
 
                     WindowEvent(event.time_stamp, 
-                                Window::get_from_id(event.window_id).unwrap(),
+                                ~Window::get_from_id(event.window_id).unwrap(),
                                 num::from_u8(event.event).unwrap(),
                                 event.data1,
                                 event.data2)
@@ -258,7 +258,7 @@ impl Event {
                     };
 
                     KeyboardDownEvent(event.time_stamp, 
-                                      Window::get_from_id(event.window_id).unwrap(),
+                                      ~Window::get_from_id(event.window_id).unwrap(),
                                       event.repeat != 0,
                                       Keysym::wrap(&event.keysym))
                 },
@@ -270,7 +270,7 @@ impl Event {
                     };
 
                     KeyboardUpEvent(event.time_stamp, 
-                                    Window::get_from_id(event.window_id).unwrap(),
+                                    ~Window::get_from_id(event.window_id).unwrap(),
                                     event.repeat != 0,
                                     Keysym::wrap(&event.keysym))
 
@@ -283,7 +283,7 @@ impl Event {
                     };
 
                     TextEditingEvent(event.time_stamp, 
-                                     Window::get_from_id(event.window_id).unwrap(),
+                                     ~Window::get_from_id(event.window_id).unwrap(),
                                      str::raw::from_utf8(event.text),
                                      event.start,
                                      event.length)
@@ -296,7 +296,7 @@ impl Event {
                     };
 
                     TextInputEvent(event.time_stamp, 
-                                   Window::get_from_id(event.window_id).unwrap(),
+                                   ~Window::get_from_id(event.window_id).unwrap(),
                                    str::raw::from_utf8(event.text))
                 },
 
@@ -307,7 +307,7 @@ impl Event {
                     };
 
                     MouseMotionEvent(event.time_stamp, 
-                                     Window::get_from_id(event.window_id).unwrap(),
+                                     ~Window::get_from_id(event.window_id).unwrap(),
                                      Mouse::wrap_state(event.state),
                                      event.x, event.y, event.xrel, event.yrel)
                 },
@@ -319,7 +319,7 @@ impl Event {
                     };
 
                     MouseButtonDownEvent(event.time_stamp, 
-                                         Window::get_from_id(event.window_id).unwrap(),
+                                         ~Window::get_from_id(event.window_id).unwrap(),
                                          num::from_u8(event.button).unwrap(),
                                          num::from_uint(event.state as uint).unwrap(),
                                          event.x, event.y)
@@ -332,7 +332,7 @@ impl Event {
                     };
 
                     MouseButtonUpEvent(event.time_stamp, 
-                                       Window::get_from_id(event.window_id).unwrap(),
+                                       ~Window::get_from_id(event.window_id).unwrap(),
                                        num::from_u8(event.button).unwrap(),
                                        num::from_uint(event.state as uint).unwrap(),
                                        event.x, event.y)
@@ -345,7 +345,7 @@ impl Event {
                     };
 
                     MouseWheelEvent(event.time_stamp, 
-                                    Window::get_from_id(event.window_id).unwrap(),
+                                    ~Window::get_from_id(event.window_id).unwrap(),
                                     event.x, event.y)
                 }
 

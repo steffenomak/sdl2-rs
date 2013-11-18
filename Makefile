@@ -1,6 +1,10 @@
-all:
+all: sdl2 hello-world
+
+sdl2:
 	rustpkg build sdl2
 	rustpkg install sdl2
+
+hello-world:
 	rustpkg build hello-world
 	rustpkg install hello-world
 

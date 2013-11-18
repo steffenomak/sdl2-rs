@@ -3,11 +3,15 @@ use rect::Rect;
 use pixel::{PixelFormat, PixelFormatFlag, Color};
 use error::get_error;
 use std::vec;
+use rwops::ffi::SDL_RWFromFile;
+use std::path::Path;
 
 pub mod ffi {
     use pixel::ffi::SDL_PixelFormat;
     use std::libc::{c_int, uint32_t, c_void};
     use rect::Rect;
+
+    use rwops::ffi::SDL_RWops;
 
     pub struct SDL_BlitMap;
 
@@ -61,6 +65,11 @@ pub mod ffi {
                                key: *uint32_t) -> c_int;
         pub fn SDL_UnlockSurface(surface: *SDL_Surface);
         pub fn SDL_SetSurfaceRLE(surface: *SDL_Surface, flag: c_int) -> c_int;
+
+        pub fn SDL_LoadBMP_RW(src: *SDL_RWops, freesrc: c_int) -> *SDL_Surface;
+        pub fn SDL_SaveBMP_RW(surface: *SDL_Surface, 
+                              dst: *SDL_RWops,
+                              freedst: c_int) -> c_int;
     }
 }
 
@@ -70,6 +79,12 @@ pub struct Surface {
 }
 
 impl Surface {
+    pub fn get_pixel_format(&self) -> PixelFormat {
+        unsafe {
+            PixelFormat{ raw: (*self.raw).format, owned: false }
+        }
+    }
+
     pub fn blit_surface(&self, 
                     dest_rect: Option<Rect>,
                     src: &Surface,
@@ -197,12 +212,37 @@ impl Surface {
             ffi::SDL_SetSurfaceRLE(self.raw, set as i32) == 0
         }
     }
+
+    pub fn load_bmp(path: &Path) -> Result<Surface, ~str> {
+        unsafe {
+            let p = SDL_RWFromFile(path.to_c_str().unwrap(), 
+                                               "rb".to_c_str().unwrap());
+            let raw = ffi::SDL_LoadBMP_RW(p, 1);
+
+            if raw.is_null() {
+                Err(get_error())
+            } else {
+                Ok( Surface{ raw: raw, owned: true } )
+            }
+        }
+    }
+
+    pub fn save_bmp(&self, path: &Path) -> bool {
+        unsafe {
+            let p = SDL_RWFromFile(path.to_c_str().unwrap(), 
+                                   "wb".to_c_str().unwrap());
+            ffi::SDL_SaveBMP_RW(self.raw, p, 1) == 0
+        }
+    }
 }
 
 impl Drop for Surface {
     fn drop(&mut self) {
         if self.owned {
+            debug!("Owned Surface dropepd");
             unsafe { ffi::SDL_FreeSurface(self.raw); }
+        } else {
+            debug!("Surface dropped");
         }
     }
 }

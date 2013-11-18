@@ -191,7 +191,10 @@ impl Drop for Palette {
     fn drop(&mut self) {
         unsafe {
             if self.owned {
+                debug!("Owned Palette dropped");
                 ffi::SDL_FreePalette(self.raw);
+            } else {
+                debug!("Palette dropped");
             }
         }
     }
@@ -253,7 +256,10 @@ impl Drop for PixelFormat {
     fn drop(&mut self) {
         unsafe {
             if self.owned {
+                debug!("Owned PixelFormat dropped");
                 ffi::SDL_FreeFormat(self.raw);
+            } else {
+                debug!("PixelFormat dropped");
             }
         }
     }
