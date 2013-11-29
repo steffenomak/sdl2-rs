@@ -2,8 +2,9 @@ use video::{Window, WindowFlags};
 use video::ffi::SDL_Window;
 use error::get_error;
 use surface::Surface;
-use pixel::PixelFormatFlag;
+use pixel::{PixelFormatFlag, Color};
 use std::ptr;
+use blend_mode::BlendMode;
 
 pub enum RendererFlags {
     Software      = 0x00000001u,
@@ -31,9 +32,10 @@ pub enum RendererFlip {
 }
 
 pub mod ffi {
-    use std::libc::{c_int, uint32_t};
+    use std::libc::{c_int, uint8_t, uint32_t};
     use video::ffi::SDL_Window;
     use surface::ffi::SDL_Surface;
+    use blend_mode::BlendMode;
 
     pub struct SDL_Renderer;
     pub struct SDL_Texture;
@@ -58,6 +60,16 @@ pub mod ffi {
                                            renderer: **SDL_Renderer) -> c_int;
         pub fn SDL_DestroyRenderer(renderer: *SDL_Renderer);
         pub fn SDL_DestroyTexture(texture: *SDL_Texture);
+        pub fn SDL_GetNumRenderDrivers() -> c_int;
+        pub fn SDL_GetRenderDrawBlendMode(renderer: *SDL_Renderer, 
+                                          blendMode: *BlendMode) -> c_int;
+        pub fn SDL_GetRenderDrawColor(renderer: *SDL_Renderer, 
+                                      r: *uint8_t,
+                                      g: *uint8_t,
+                                      b: *uint8_t,
+                                      a: *uint8_t) -> c_int;
+        pub fn SDL_GetRenderDriverInfo(index: c_int, 
+                                       info
     }
 }
 
@@ -71,6 +83,8 @@ pub struct Texture {
     owned: bool,
 }
 
+pub struct 
+
 impl Drop for Renderer {
     fn drop(&mut self) {
         if self.owned {
@@ -78,8 +92,6 @@ impl Drop for Renderer {
             unsafe {
                 ffi::SDL_DestroyRenderer(self.raw);
             }
-        } else {
-            debug!("Renderer dropped");
         }
     }
 }
@@ -162,11 +174,54 @@ impl Renderer {
             }
         }
     }
+
+    pub fn get_num_driver() -> Result<i32, ~str> {
+        let res = unsafe {
+            ffi::SDL_GetNumRenderDrivers();
+        };
+
+        if res < 1 {
+            Err(get_error())
+        } else {
+            Ok(res)
+        }
+    }
+
+    pub fn get_draw_blend_mode(&self) -> Result<BlendMode, ~str> {
+        let blend = BlendModeNone;
+        let res = unsafe {
+            ffi::SDL_GetRenderDrawBlendMode(self.raw, &blend);
+        };
+
+        if res == 0 {
+            Ok(blend)
+        } else { 
+            Err(get_error())
+        }
+    }
+
+    pub fn get_draw_color(&self) -> Result<Color, ~str> {
+        let col = Color::new(0, 0, 0, 0);
+        let res = unsafe {
+            ffi::SDL_GetRenderDrawColor(self.raw, 
+                                        &(col.r),
+                                        &(col.g),
+                                        &(col.b),
+                                        &(col.a));
+        };
+
+        if res == 0 {
+            Ok(col)
+        } else {
+            Err(get_error())
+        }
+    }
 }
 
 impl Drop for Texture {
     fn drop(&mut self) {
         if self.owned {
+            debug!("Texture dropped");
             unsafe {
                 ffi::SDL_DestroyTexture(self.raw);
             }
