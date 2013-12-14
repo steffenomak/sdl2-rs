@@ -4,7 +4,7 @@ use error::get_error;
 use surface::Surface;
 use pixel::{PixelFormatFlag, Color};
 use std::ptr;
-use blend_mode::BlendMode;
+use blend_mode::*;
 
 pub enum RendererFlags {
     Software      = 0x00000001u,
@@ -39,6 +39,7 @@ pub mod ffi {
 
     pub struct SDL_Renderer;
     pub struct SDL_Texture;
+    pub enum SDL_BlendMode {}
     
     extern {
         pub fn SDL_CreateRenderer(window: *SDL_Window, 
@@ -182,17 +183,16 @@ impl Renderer {
     }
 
     pub fn get_draw_blend_mode(&self) -> Result<BlendMode, ~str> {
-        //TODO fix this.
-        /*let blend = BlendModeNone;
+        let blend = BlendModeNone;
         let res = unsafe {
-            ffi::SDL_GetRenderDrawBlendMode(self.raw, &blend);
+            ffi::SDL_GetRenderDrawBlendMode(self.raw, &blend)
         };
 
         if res == 0 {
             Ok(blend)
-        } else {*/ 
+        } else { 
             Err(get_error())
-        //}
+        }
     }
 
     pub fn get_draw_color(&self) -> Result<Color, ~str> {

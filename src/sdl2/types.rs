@@ -3,5 +3,6 @@ pub mod ffi {
 
     pub type SDL_bool = c_int;
     pub static SDL_TRUE: SDL_bool = 1;
+    #[allow(dead_code)]
     pub static SDL_FALSE: SDL_bool = 0;
 }
