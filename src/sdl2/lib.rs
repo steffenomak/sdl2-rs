@@ -1,6 +1,4 @@
-#[link(name = "sdl2", 
-       package_id = "sdl2",
-       vers = "0.0.1")];
+#[pkgid = "sdl2#0.0.1"];
 #[crate_type = "lib"];
 #[feature(globs)];
 
