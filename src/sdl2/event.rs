@@ -4,11 +4,12 @@ use video::{Window, WindowEventID};
 use keyboard::Keysym;
 use mouse::Mouse;
 use mouse::MouseState;
+use std::vec;
 
 pub mod ffi {
     use std::ptr;
     use std::cast;
-    use std::libc::{uint32_t, int32_t, uint8_t, c_int, c_uchar};
+    use std::libc::{uint32_t, int32_t, uint8_t, c_int, c_char};
     use keyboard::ffi::SDL_Keysym;
 
     pub struct SDL_CommonEvent {
@@ -43,7 +44,7 @@ pub mod ffi {
         _type: uint32_t,
         time_stamp: uint32_t,
         window_id: uint32_t,
-        text: [c_uchar, ..32u],
+        text: [c_char, ..32u],
         start: int32_t,
         length: int32_t,
     }
@@ -52,7 +53,7 @@ pub mod ffi {
         _type: uint32_t,
         time_stamp: uint32_t,
         window_id: uint32_t,
-        text: [c_uchar, ..32u],
+        text: [c_char, ..32u],
     }
 
     pub struct SDL_MouseMotionEvent {
@@ -282,9 +283,12 @@ impl Event {
                         None => return NoEvent,
                     };
 
+                    let v = vec::raw::to_ptr(event.text);
+                    let v = str::raw::from_c_str(v);
+
                     TextEditingEvent(event.time_stamp, 
                                      ~Window::get_from_id(event.window_id).unwrap(),
-                                     str::raw::from_utf8(event.text),
+                                     v,
                                      event.start,
                                      event.length)
                 },
@@ -295,9 +299,12 @@ impl Event {
                         None => return NoEvent,
                     };
 
+                    let v = vec::raw::to_ptr(event.text);
+                    let v = str::raw::from_c_str(v);
+
                     TextInputEvent(event.time_stamp, 
                                    ~Window::get_from_id(event.window_id).unwrap(),
-                                   str::raw::from_utf8(event.text))
+                                   v)
                 },
 
                 MouseMotionEventType => {

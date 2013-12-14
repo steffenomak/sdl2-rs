@@ -68,8 +68,6 @@ pub mod ffi {
                                       g: *uint8_t,
                                       b: *uint8_t,
                                       a: *uint8_t) -> c_int;
-        pub fn SDL_GetRenderDriverInfo(index: c_int, 
-                                       info
     }
 }
 
@@ -82,8 +80,6 @@ pub struct Texture {
     raw: *ffi::SDL_Texture,
     owned: bool,
 }
-
-pub struct 
 
 impl Drop for Renderer {
     fn drop(&mut self) {
@@ -156,9 +152,7 @@ impl Renderer {
     }
 
     pub fn create_window_and_renderer(w: i32, h: i32, flags: &[WindowFlags]) -> Result<(Window, Renderer), ~str> {
-        let f = do flags.iter().fold(0) |all, it| {
-            all | *it as u32
-        };
+        let f = flags.iter().fold(0, |all, it| all | *it as u32);
 
         unsafe {
             let win_ptr: *SDL_Window = ptr::null();
@@ -177,7 +171,7 @@ impl Renderer {
 
     pub fn get_num_driver() -> Result<i32, ~str> {
         let res = unsafe {
-            ffi::SDL_GetNumRenderDrivers();
+            ffi::SDL_GetNumRenderDrivers()
         };
 
         if res < 1 {
@@ -188,16 +182,17 @@ impl Renderer {
     }
 
     pub fn get_draw_blend_mode(&self) -> Result<BlendMode, ~str> {
-        let blend = BlendModeNone;
+        //TODO fix this.
+        /*let blend = BlendModeNone;
         let res = unsafe {
             ffi::SDL_GetRenderDrawBlendMode(self.raw, &blend);
         };
 
         if res == 0 {
             Ok(blend)
-        } else { 
+        } else {*/ 
             Err(get_error())
-        }
+        //}
     }
 
     pub fn get_draw_color(&self) -> Result<Color, ~str> {
@@ -207,7 +202,7 @@ impl Renderer {
                                         &(col.r),
                                         &(col.g),
                                         &(col.b),
-                                        &(col.a));
+                                        &(col.a))
         };
 
         if res == 0 {

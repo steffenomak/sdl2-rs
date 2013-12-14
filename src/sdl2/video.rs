@@ -85,14 +85,11 @@ impl Window {
                x: i32, y: i32,
                w: i32, h: i32,
                flags: &[WindowFlags]) -> Result<Window, ~str> {
-        let f = do flags.iter().fold(0) |all, it| {
-            all | *it as u32
-        };
+
+        let f = flags.iter().fold(0, |all, it| all | *it as u32);
 
         unsafe {
-            let raw = do title.with_c_str |buf| {
-                ffi::SDL_CreateWindow(buf, x, y, w, h, f)
-            };
+            let raw = title.with_c_str(|buf| ffi::SDL_CreateWindow(buf, x, y, w, h, f));
 
             if ptr::is_null(raw) {
                 Err(get_error())

@@ -24,8 +24,6 @@ pub fn get_error() -> ~str {
 }
 
 pub fn set_error(err: &str) {
-    do err.with_c_str |buf| {
-        unsafe { ffi::SDL_SetError(buf); }
-    }
+    err.with_c_str(|buf| unsafe { ffi::SDL_SetError(buf) });
 }
 

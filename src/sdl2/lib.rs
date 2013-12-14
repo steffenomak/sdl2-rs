@@ -1,4 +1,6 @@
-#[link(name = "sdl2", vers = "0.0.2")];
+#[link(name = "sdl2", 
+       package_id = "sdl2",
+       vers = "0.0.1")];
 #[crate_type = "lib"];
 #[feature(globs)];
 
@@ -19,7 +21,7 @@ pub use rwops::*;
 pub use blend_mode::*;
 
 mod linkage {
-    #[link_args="-lSDL2"]
+    #[link(name = "SDL2")]
     extern {}
 }
 

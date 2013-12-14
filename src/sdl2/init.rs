@@ -25,17 +25,16 @@ pub enum InitFlag {
 
 pub fn init(flags: &[InitFlag]) -> bool {
     unsafe {
-        ffi::SDL_Init(do flags.iter().fold(0) |flags, &flag| {
-            flags | flag as ffi::SDL_InitFlag
-        }) == 0
+        ffi::SDL_Init(flags.iter().fold(0, |flags, &flag| {
+            flags | flag as ffi::SDL_InitFlag})) == 0
     }
 }
 
 pub fn init_subsystem(flags: &[InitFlag]) -> bool {
     unsafe {
-        ffi::SDL_InitSubSystem(do flags.iter().fold(0) |flags, &flag| {
+        ffi::SDL_InitSubSystem(flags.iter().fold(0, |flags, &flag| {
             flags | flag as ffi::SDL_InitFlag
-        }) == 0
+        })) == 0
     }
 }
 
@@ -47,17 +46,17 @@ pub fn quit() {
 
 pub fn quit_subsystem(flags: &[InitFlag]) {
     unsafe {
-        ffi::SDL_QuitSubSystem(do flags.iter().fold(0) |res, &f| {
+        ffi::SDL_QuitSubSystem(flags.iter().fold(0, |res, &f| {
             res | f as ffi::SDL_InitFlag
-        });
+        }));
     }
 }
 
 pub fn was_init(flags: &[InitFlag]) -> ~[InitFlag] {
     let i: ffi::SDL_InitFlag = unsafe {
-        ffi::SDL_WasInit(do flags.iter().fold(0) |res, &f| {
+        ffi::SDL_WasInit(flags.iter().fold(0, |res, &f| {
             res | f as ffi::SDL_InitFlag
-        })
+        }))
     };
 
     let flags = [
@@ -71,11 +70,11 @@ pub fn was_init(flags: &[InitFlag]) -> ~[InitFlag] {
         InitNoParachute,
         InitEverything];
 
-    do flags.iter().filter_map |&f| {
+    flags.iter().filter_map(|&f| {
         if i & f as ffi::SDL_InitFlag != 0 {
             Some(f)
         } else {
             None
         }
-    }.collect()
+    }).collect()
 }
