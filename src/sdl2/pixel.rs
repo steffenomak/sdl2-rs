@@ -1,13 +1,12 @@
 use error::get_error;
 use std::str;
-use std::vec;
 use std::num;
 
 mod types;
 
 pub mod ffi {
     use std::libc::{uint8_t, uint16_t, uint32_t, c_int, c_float, c_char};
-    use super::types::ffi::*;
+    use super::types::*;
 
     pub struct SDL_Color {
         r: uint8_t,
@@ -180,7 +179,7 @@ impl Palette {
                   ncolors: i32) -> bool {
         unsafe {
             ffi::SDL_SetPaletteColors(self.raw, 
-                                      vec::raw::to_ptr(colors) as *ffi::SDL_Color,
+                                      colors.as_ptr() as *ffi::SDL_Color,
                                       first_color,
                                       ncolors) == 0
         }
@@ -269,7 +268,7 @@ pub fn calculate_gamma_ramp(gamma: f32) -> ~[u16] {
     let tmp = ~[0, ..256];
 
     unsafe {
-        ffi::SDL_CalculateGammaRamp(gamma, vec::raw::to_ptr(tmp));
+        ffi::SDL_CalculateGammaRamp(gamma, tmp.as_ptr());
     }
 
     tmp
@@ -317,7 +316,7 @@ pub fn pixel_format_flag_to_mask(format: PixelFormatFlag) -> Option<(i32,
                                            &r_m, 
                                            &g_m,
                                            &b_m,
-                                           &a_m) == types::ffi::SDL_TRUE {
+                                           &a_m) == types::SDL_TRUE {
             Some((bpp, r_m, g_m, b_m, a_m))
         } else {
             None

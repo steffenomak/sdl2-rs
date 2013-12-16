@@ -4,7 +4,7 @@ use error::get_error;
 use surface::Surface;
 use pixel::{PixelFormatFlag, Color};
 use std::ptr;
-use blend_mode::*;
+use blend_mode::{BlendMode, BlendModeNone};
 
 pub enum RendererFlags {
     Software      = 0x00000001u,

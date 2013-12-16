@@ -1,17 +1,20 @@
 use std::ptr;
 use rect::Rect;
-use pixel::{PixelFormat, PixelFormatFlag, Color};
+use pixel::{PixelFormat, PixelFormatFlag, Color, Palette};
 use error::get_error;
-use std::vec;
 use rwops::ffi::SDL_RWFromFile;
 use std::path::Path;
+use blend_mode::{BlendMode, BlendModeNone};
+
+mod types;
 
 pub mod ffi {
-    use pixel::ffi::SDL_PixelFormat;
-    use std::libc::{c_int, uint32_t, c_void};
+    use pixel::ffi::{SDL_PixelFormat, SDL_Palette};
+    use std::libc::{c_int, uint8_t, uint32_t, c_void};
     use rect::Rect;
-
+    use super::types::SDL_bool;
     use rwops::ffi::SDL_RWops;
+    use blend_mode::BlendMode;
 
     pub struct SDL_BlitMap;
 
@@ -70,6 +73,36 @@ pub mod ffi {
         pub fn SDL_SaveBMP_RW(surface: *SDL_Surface, 
                               dst: *SDL_RWops,
                               freedst: c_int) -> c_int;
+
+        pub fn SDL_SetClipRect(surface: *SDL_Surface, 
+                               rect: *Rect) -> SDL_bool;
+        pub fn SDL_GetCliptRect(surface: *SDL_Surface, 
+                                rect: *Rect);
+
+        pub fn SDL_GetSurfaceAlphaMod(surface: *SDL_Surface, 
+                                      alpha: *uint8_t) -> c_int;
+
+        pub fn SDL_SetSurfaceAlphaMod(surface: *SDL_Surface, 
+                                      alpha: uint8_t) -> c_int;
+
+        pub fn SDL_SetSurfaceBlendMode(surface: *SDL_Surface, 
+                                       blendMode: BlendMode) -> c_int;
+
+        pub fn SDL_GetSurfaceBlendMode(surface: *SDL_Surface, 
+                                       blendMode: *BlendMode) -> c_int;
+
+        pub fn SDL_SetSurfaceColorMod(surface: *SDL_Surface, 
+                                      r: uint8_t,
+                                      g: uint8_t,
+                                      b: uint8_t) -> c_int;
+
+        pub fn SDL_GetSurfaceColorMod(surface: *SDL_Surface, 
+                                      r: *uint8_t,
+                                      g: *uint8_t,
+                                      b: *uint8_t) -> c_int;
+
+        pub fn SDL_SetSurfacePalette(surface: *SDL_Surface, 
+                                     palette: *SDL_Palette) -> c_int;
     }
 }
 
@@ -169,7 +202,7 @@ impl Surface {
             let c = c.map_rgba(color);
 
             ffi::SDL_FillRects(self.raw, 
-                               vec::raw::to_ptr(rects), 
+                               rects.as_ptr(),
                                rects.len() as i32, c) == 0
         }
     }
@@ -190,6 +223,12 @@ impl Surface {
         unsafe {
             let c = PixelFormat{raw: (*self.raw).format, owned: false};
             let c = c.map_rgba(key);
+
+            let set = if set {
+                types::SDL_TRUE
+            } else {
+                types::SDL_FALSE
+            };
 
             ffi::SDL_SetColorKey(self.raw, set as i32, c) == 0
         }
@@ -233,6 +272,79 @@ impl Surface {
                                    "wb".to_c_str().unwrap());
             ffi::SDL_SaveBMP_RW(self.raw, p, 1) == 0
         }
+    }
+
+    pub fn set_clip_rect(&self, rect: &Rect) -> bool {
+        unsafe {
+            if ffi::SDL_SetClipRect(self.raw, rect) == types::SDL_TRUE {
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    pub fn get_clip_rect(&self) -> Rect {
+        let r = Rect::new(0, 0, 0, 0);
+
+        unsafe { ffi::SDL_GetCliptRect(self.raw, &r); }
+        r
+    }
+
+    pub fn get_alpha_mod(&self) -> Result<u8, ~str> {
+        let alpha: u8 = 0;
+        let res = unsafe { ffi::SDL_GetSurfaceAlphaMod(self.raw, &alpha) };
+
+        if res == 0 {
+            Ok(alpha)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_alpha_mod(&self, alpha: u8) -> bool {
+        unsafe { ffi::SDL_SetSurfaceAlphaMod(self.raw, alpha) == 0 }
+    }
+
+    pub fn set_blend_mode(&self, blend_mode: BlendMode) -> bool {
+        unsafe { ffi::SDL_SetSurfaceBlendMode(self.raw, blend_mode) == 0 }
+    }
+
+    pub fn get_blend_mode(&self) -> Result<BlendMode, ~str> {
+        let blend = BlendModeNone;
+        let r = unsafe { ffi::SDL_GetSurfaceBlendMode(self.raw, &blend) == 0 };
+
+        if r {
+            Ok(blend)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_color_mod(&self, color: Color) -> bool {
+        unsafe { ffi::SDL_SetSurfaceColorMod(self.raw, 
+                                             color.r,
+                                             color.g,
+                                             color.b) == 0 }
+    }
+
+    pub fn get_color_mod(&self) -> Result<Color, ~str> {
+        let color = Color::new(0, 0, 0, 0);
+        let suc = unsafe { ffi::SDL_GetSurfaceColorMod(self.raw, 
+                                                       &(color.r),
+                                                       &(color.g),
+                                                       &(color.b)) == 0 };
+
+        if suc {
+            Ok(color)
+        } else {
+            Err(get_error())
+        }
+    }
+
+    pub fn set_palette(&self, palette: Palette) -> bool {
+        unsafe { ffi::SDL_SetSurfacePalette(self.raw, 
+                                            palette.raw) == 0 }
     }
 }
 

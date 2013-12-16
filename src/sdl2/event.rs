@@ -4,7 +4,6 @@ use video::{Window, WindowEventID};
 use keyboard::Keysym;
 use mouse::Mouse;
 use mouse::MouseState;
-use std::vec;
 
 pub mod ffi {
     use std::ptr;
@@ -283,7 +282,7 @@ impl Event {
                         None => return NoEvent,
                     };
 
-                    let v = vec::raw::to_ptr(event.text);
+                    let v = event.text.as_ptr();
                     let v = str::raw::from_c_str(v);
 
                     TextEditingEvent(event.time_stamp, 
@@ -299,7 +298,7 @@ impl Event {
                         None => return NoEvent,
                     };
 
-                    let v = vec::raw::to_ptr(event.text);
+                    let v = event.text.as_ptr();
                     let v = str::raw::from_c_str(v);
 
                     TextInputEvent(event.time_stamp, 
